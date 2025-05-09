@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Report - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-file-alt me-2"></i> Create Report
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form.title|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.report_type|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    {{ form.description|as_crispy_field }}
+                    {{ form.department|as_crispy_field }}
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-alt me-2"></i> Generate Report
+                        </button>
+                        <a href="{% url 'analytics:report_list' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Report Type Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Department Analysis</h6>
+                        <p>
+                            This report analyzes feedback distribution across departments.
+                            It shows which departments receive the most feedback and provides
+                            a breakdown of feedback status by department.
+                        </p>
+                        <ul>
+                            <li>Feedback count by department</li>
+                            <li>Percentage distribution</li>
+                            <li>Status breakdown by department</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Tag Analysis</h6>
+                        <p>
+                            This report examines the usage of tags across feedback submissions.
+                            It helps identify the most common topics and concerns in feedback.
+                        </p>
+                        <ul>
+                            <li>Most used tags overall</li>
+                            <li>Tag usage by department</li>
+                            <li>Tag trend analysis</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Time-based Analysis</h6>
+                        <p>
+                            This report tracks feedback submission patterns over time,
+                            helping identify trends, peak periods, and seasonal variations.
+                        </p>
+                        <ul>
+                            <li>Daily submission trends</li>
+                            <li>Weekly patterns</li>
+                            <li>Monthly and seasonal trends</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Status Analysis</h6>
+                        <p>
+                            This report analyzes the status distribution of feedback items
+                            and measures response time and resolution effectiveness.
+                        </p>
+                        <ul>
+                            <li>Status breakdown</li>
+                            <li>Average response time</li>
+                            <li>Status distribution by department</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add description placeholders based on report type
+        $('#id_report_type').change(function() {
+            var reportType = $(this).val();
+            var placeholder = '';
+            
+            switch(reportType) {
+                case 'department':
+                    placeholder = 'Analysis of feedback distribution across departments...';
+                    break;
+                case 'tag':
+                    placeholder = 'Analysis of tag usage and common feedback topics...';
+                    break;
+                case 'time':
+                    placeholder = 'Analysis of feedback submission patterns over time...';
+                    break;
+                case 'status':
+                    placeholder = 'Analysis of feedback status distribution and response times...';
+                    break;
+                case 'custom':
+                    placeholder = 'Custom analysis of feedback data...';
+                    break;
+            }
+            
+            $('#id_description').attr('placeholder', placeholder);
+        });
+        
+        // Trigger change on load to set initial placeholder
+        $('#id_report_type').trigger('change');
+    });
+</script>
+{% endblock %}

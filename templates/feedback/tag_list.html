@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load feedback_extras %}
+
+{% block title %}Tags - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-tags me-2"></i> Tags</h2>
+        <p class="lead">Manage tags for categorizing feedback</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'feedback:tag_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Add Tag
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tag List</h5>
+            <span class="badge bg-primary">{{ tags|length }} tags</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if tags %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Usage</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tag in tags %}
+                            <tr>
+                                <td>{{ tag.name }}</td>
+                                <td>{{ tag.department.name }}</td>
+                                <td>
+                                    {% feedback_count_by_tag tag.id as tag_count %}
+                                    {{ tag_count }} feedback items
+                                </td>
+                                <td>
+                                    {% if tag.description %}
+                                        {{ tag.description|truncatechars:50 }}
+                                    {% else %}
+                                        <span class="text-muted">No description</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center p-5">
+                <i class="fas fa-tags text-muted" style="font-size: 4rem;"></i>
+                <h3 class="mt-4">No tags yet</h3>
+                <p class="lead">Tags help categorize feedback for better organization</p>
+                <a href="{% url 'feedback:tag_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> Create Your First Tag
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">About Tags</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Purpose of Tags</h6>
+                <p>
+                    Tags help categorize and organize feedback within departments.
+                    They allow students to label their feedback with specific topics
+                    and make it easier to identify trends and common issues.
+                </p>
+                <ul>
+                    <li>Create clear, descriptive tags</li>
+                    <li>Keep tag names concise</li>
+                    <li>Use consistent naming conventions</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Best Practices</h6>
+                <p>
+                    Effective tagging systems improve the feedback analysis process
+                    and make it easier to route feedback to the right people.
+                </p>
+                <ul>
+                    <li>Create department-specific tags</li>
+                    <li>Use a balanced number of tags (not too few, not too many)</li>
+                    <li>Regularly review and update tags based on feedback trends</li>
+                    <li>Add descriptive text to help users understand when to use each tag</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Enable tooltips
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load feedback_extras %}
+
+{% block title %}My Feedback - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-tachometer-alt me-2"></i> Student Dashboard</h2>
+        <p class="lead">View and track the status of your submitted feedback</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'feedback:feedback_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Submit New Feedback
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>Total Feedback</div>
+                    <div class="h4 mb-0">{{ feedback_items.count }}</div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>Pending</div>
+                    <div class="h4 mb-0">{{ feedback_items|filter_by_status:"pending"|length }}</div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>Addressed</div>
+                    <div class="h4 mb-0">{{ feedback_items|filter_by_status:"addressed"|length }}</div>
+                </div>
+                
+                <hr>
+                
+                <div class="form-group">
+                    <label for="trackCode" class="form-label">Track Anonymous Feedback</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="trackCode" placeholder="Enter hash code">
+                        <button class="btn btn-outline-secondary" type="button" id="trackButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">Enter the hash code to track anonymous feedback</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Departments</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'feedback:student_dashboard' %}" class="list-group-item list-group-item-action">
+                    All Departments
+                </a>
+                {% for department in departments %}
+                    <a href="{% url 'feedback:student_dashboard' %}?department={{ department.id }}" 
+                       class="list-group-item list-group-item-action">
+                        {{ department.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-9 col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Your Feedback History</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if feedback_items %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for feedback in feedback_items %}
+                                    <tr>
+                                        <td>
+                                            {{ feedback.title }}
+                                            {% if feedback.is_anonymous %}
+                                                <i class="fas fa-user-secret ms-2 text-muted" 
+                                                   data-bs-toggle="tooltip" 
+                                                   title="Anonymous submission"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ feedback.department.name }}</td>
+                                        <td>
+                                            {% if feedback.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            {% elif feedback.status == 'approved' %}
+                                                <span class="badge bg-info">Approved</span>
+                                            {% elif feedback.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% elif feedback.status == 'addressed' %}
+                                                <span class="badge bg-success">Addressed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ feedback.submission_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'feedback:feedback_detail' hash_id=feedback.hash_id %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-comment-slash text-muted" style="font-size: 3rem;"></i>
+                        <p class="lead mt-3">You haven't submitted any feedback yet</p>
+                        <a href="{% url 'feedback:feedback_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i> Submit Your First Feedback
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if feedback_items %}
+            <div class="card shadow-sm mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Updates</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for feedback in feedback_items|dictsortreversed:"updated_at"|slice:":5" %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ feedback.title }}</h6>
+                                <small>{{ feedback.updated_at|date:"M d, Y" }}</small>
+                            </div>
+                            <p class="mb-1">Status: 
+                                {% if feedback.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif feedback.status == 'approved' %}
+                                    <span class="badge bg-info">Approved</span>
+                                {% elif feedback.status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% elif feedback.status == 'addressed' %}
+                                    <span class="badge bg-success">Addressed</span>
+                                {% endif %}
+                            </p>
+                            <small>Department: {{ feedback.department.name }}</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Enable tooltips
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Handle anonymous feedback tracking
+        $('#trackButton').click(function() {
+            var hashCode = $('#trackCode').val().trim();
+            if (hashCode) {
+                window.location.href = '{% url "feedback:feedback_detail" hash_id="00000" %}'.replace('00000', hashCode);
+            }
+        });
+        
+        // Allow pressing enter to submit
+        $('#trackCode').keypress(function(e) {
+            if (e.which == 13) {
+                $('#trackButton').click();
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

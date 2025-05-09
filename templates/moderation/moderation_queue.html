@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Moderation Queue - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-tasks me-2"></i> Moderation Queue</h2>
+        <p class="lead">Review and moderate feedback submissions</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'moderation:filter_rules' %}" class="btn btn-outline-primary">
+            <i class="fas fa-cog me-2"></i> Filter Rules
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Filter Options</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" id="filterForm">
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department</label>
+                        <select name="department" id="department" class="form-select">
+                            <option value="">All Departments</option>
+                            {% for department in departments %}
+                                <option value="{{ department.id }}" {% if request.GET.department == department.id|stringformat:"i" %}selected{% endif %}>
+                                    {{ department.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="q" class="form-label">Search</label>
+                        <div class="input-group">
+                            <input type="text" name="q" id="q" class="form-control" placeholder="Search..." value="{{ request.GET.q|default:'' }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-2"></i> Apply Filters
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="resetButton">
+                            <i class="fas fa-undo me-2"></i> Reset Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-9 col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Pending Feedback</h5>
+                    <span class="badge bg-primary">{{ page_obj.paginator.count }} items</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if feedback_items %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Submitted</th>
+                                    <th>Anonymous</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for feedback in feedback_items %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'feedback:feedback_detail' hash_id=feedback.hash_id %}">
+                                                {{ feedback.title }}
+                                            </a>
+                                        </td>
+                                        <td>{{ feedback.department.name }}</td>
+                                        <td>{{ feedback.submission_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            {% if feedback.is_anonymous %}
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            {% else %}
+                                                <i class="fas fa-times-circle text-danger"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{% url 'moderation:moderate_feedback' feedback_id=feedback.id %}" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-shield-alt me-1"></i> Moderate
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" 
+                                                        data-bs-toggle="dropdown">
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a class="dropdown-item" 
+                                                           href="{% url 'feedback:feedback_detail' hash_id=feedback.hash_id %}">
+                                                            <i class="fas fa-eye me-2"></i> View Details
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <form method="post" action="{% url 'feedback:update_status' hash_id=feedback.hash_id %}"
+                                                              class="dropdown-item-form">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="status" value="approved">
+                                                            <button type="submit" class="dropdown-item text-success">
+                                                                <i class="fas fa-check-circle me-2"></i> Approve
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form method="post" action="{% url 'feedback:update_status' hash_id=feedback.hash_id %}"
+                                                              class="dropdown-item-form">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="status" value="rejected">
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="fas fa-ban me-2"></i> Reject
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if is_paginated %}
+                        <div class="p-3">
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% if query_params %}&{{ query_params.urlencode }}{% endif %}">
+                                                <i class="fas fa-angle-double-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query_params %}&{{ query_params.urlencode }}{% endif %}">
+                                                <i class="fas fa-angle-left"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                        </span>
+                                    </li>
+                                    
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query_params %}&{{ query_params.urlencode }}{% endif %}">
+                                                <i class="fas fa-angle-right"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if query_params %}&{{ query_params.urlencode }}{% endif %}">
+                                                <i class="fas fa-angle-double-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+                    
+                {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                        <p class="lead mt-3">No pending feedback items to moderate!</p>
+                        <p>Looks like everything has been reviewed. Check back later for new submissions.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dropdown-item-form {
+        display: block;
+        width: 100%;
+        padding: 0;
+    }
+    
+    .dropdown-item-form button {
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: none;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Reset filters button
+        $('#resetButton').click(function() {
+            $('#department').val('');
+            $('#q').val('');
+            $('#filterForm').submit();
+        });
+        
+        // Auto-submit on department change
+        $('#department').change(function() {
+            $('#filterForm').submit();
+        });
+    });
+</script>
+{% endblock %}

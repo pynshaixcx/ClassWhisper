@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if filter_rule %}Edit{% else %}Create{% endif %} Filter Rule - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-filter me-2"></i> 
+                    {% if filter_rule %}Edit{% else %}Create{% endif %} Filter Rule
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.is_active|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    {{ form.description|as_crispy_field }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.rule_type|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.action|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div id="patternGroup">
+                        {{ form.pattern|as_crispy_field }}
+                        <div id="regexHelp" class="form-text mb-3" style="display: none;">
+                            <div class="alert alert-info">
+                                <h6>Regular Expression Help</h6>
+                                <ul class="mb-0">
+                                    <li><code>\d</code> - Match any digit</li>
+                                    <li><code>\w</code> - Match any word character (alphanumeric + underscore)</li>
+                                    <li><code>\s</code> - Match any whitespace character</li>
+                                    <li><code>.</code> - Match any character except newline</li>
+                                    <li><code>*</code> - Match 0 or more occurrences</li>
+                                    <li><code>+</code> - Match 1 or more occurrences</li>
+                                    <li><code>?</code> - Match 0 or 1 occurrence</li>
+                                    <li><code>^</code> - Match start of string</li>
+                                    <li><code>$</code> - Match end of string</li>
+                                    <li><code>[abc]</code> - Match any character in the set</li>
+                                </ul>
+                                <p class="mt-2 mb-0">Example: <code>(?i)badword</code> - Match "badword" case-insensitive</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Save Rule
+                        </button>
+                        <a href="{% url 'moderation:filter_rules' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Rule Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Rule Types</h6>
+                        <ul>
+                            <li>
+                                <strong>Keyword</strong> - Simple text matching. The system will check if the
+                                pattern appears anywhere in the feedback text (case-insensitive).
+                            </li>
+                            <li>
+                                <strong>Regex</strong> - Regular expression pattern matching. Allows for more
+                                complex pattern matching with greater flexibility.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Actions</h6>
+                        <ul>
+                            <li>
+                                <strong>Flag for Review</strong> - Feedback matching this rule will be
+                                flagged for manual review but will still appear in the moderation queue.
+                            </li>
+                            <li>
+                                <strong>Auto-Reject</strong> - Feedback matching this rule will be
+                                automatically rejected without appearing in the moderation queue.
+                                Use with caution!
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Important:</strong> Be careful when creating rules that might filter out legitimate feedback.
+                    Test your rules thoroughly and monitor their effectiveness over time.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Show/hide regex help based on rule type
+        function toggleRegexHelp() {
+            if ($('#id_rule_type').val() === 'regex') {
+                $('#regexHelp').show();
+            } else {
+                $('#regexHelp').hide();
+            }
+        }
+        
+        // Initial state
+        toggleRegexHelp();
+        
+        // On change
+        $('#id_rule_type').change(toggleRegexHelp);
+    });
+</script>
+{% endblock %}
