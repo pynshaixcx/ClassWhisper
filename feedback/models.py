@@ -53,6 +53,7 @@ class Feedback(models.Model):
     )
     tags = models.ManyToManyField(Tag, blank=True, related_name='feedback_items')
     is_anonymous = models.BooleanField(default=False)
+    show_in_dashboard = models.BooleanField(default=True)  # Add this field
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     submission_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -120,5 +121,24 @@ class Reply(models.Model):
     def get_admin_display(self):
         """Returns a display name for the reply author"""
         if self.admin:
+            # If the reply is from the feedback submitter and the feedback is anonymous,
+            # display "Anonymous (Student)" to faculty/admin
+            if self.feedback.is_anonymous and self.admin == self.feedback.user and not self.is_user_feedback_author():
+                return "Anonymous (Student)"
+            
+            # For faculty/admin or the student's own view of their anonymous replies
+            if self.feedback.is_anonymous and self.admin == self.feedback.user:
+                return "You (Anonymous to others)"
+            
+            # Regular display for non-anonymous feedback
             return self.admin.get_full_name() or self.admin.username
         return "Department Admin"
+    
+    def is_user_feedback_author(self):
+        """Check if the current user is the author of the feedback"""
+        from django.contrib.auth.context_processors import get_user
+        request = getattr(get_thread_local(), 'request', None)
+        if request:
+            user = get_user(request)
+            return user.is_authenticated and user == self.feedback.user
+        return False

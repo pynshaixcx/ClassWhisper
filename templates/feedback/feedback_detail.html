@@ -26,7 +26,11 @@
                     <div>
                         <i class="fas fa-user me-1"></i> 
                         {% if feedback.is_anonymous %}
-                            <span class="fst-italic">Anonymous</span>
+                            {% if is_submitter %}
+                                <span class="fst-italic">Anonymous (you)</span>
+                            {% else %}
+                                <span class="fst-italic">Anonymous</span>
+                            {% endif %}
                         {% else %}
                             {{ feedback.get_author_display }}
                         {% endif %}
@@ -136,7 +140,17 @@
                 <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-center">
                         <div><i class="fas fa-user-shield me-2"></i> Anonymous</div>
-                        <div>{{ feedback.is_anonymous|yesno:"Yes,No" }}</div>
+                        <div>
+                            {% if feedback.is_anonymous %}
+                                {% if is_submitter %}
+                                    Yes (visible only to you)
+                                {% else %}
+                                    Yes
+                                {% endif %}
+                            {% else %}
+                                No
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="list-group-item">
@@ -185,7 +199,7 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    {% if user.is_authenticated and not feedback.is_anonymous and user == feedback.user %}
+                    {% if user.is_authenticated and user == feedback.user %}
                         <a href="{% url 'feedback:student_dashboard' %}" class="btn btn-primary">
                             <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
                         </a>
@@ -197,6 +211,13 @@
                         <a href="{% url 'home' %}" class="btn btn-primary">
                             <i class="fas fa-home me-2"></i> Back to Home
                         </a>
+                    {% endif %}
+
+                    {% if feedback.is_anonymous and is_submitter %}
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> This feedback was submitted anonymously. Only you can see that you're the author of this feedback.
+                        </div>
                     {% endif %}
                 </div>
             </div>

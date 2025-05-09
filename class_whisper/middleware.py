@@ -2,6 +2,29 @@
 Custom middleware for the Class Whisper application.
 """
 
+import threading
+
+
+_thread_locals = threading.local()
+
+def get_thread_local():
+    return _thread_locals
+
+class ThreadLocalMiddleware:
+    """
+    Middleware to store the request object in thread local storage.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Store request in thread local storage
+        _thread_locals.request = request
+        response = self.get_response(request)
+        # Clean up thread local storage
+        del _thread_locals.request
+        return response
+
 class AnonymityMiddleware:
     """
     Middleware to ensure anonymity for anonymous feedback submissions.

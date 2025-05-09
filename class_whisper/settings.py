@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Custom middleware for anonymity
     'class_whisper.middleware.AnonymityMiddleware',
+    # Custom middleware for thread locals
+    'class_whisper.middleware.ThreadLocalMiddleware',
 ]
 
 ROOT_URLCONF = 'class_whisper.urls'

@@ -24,7 +24,11 @@
                     <div class="alert alert-info">
                         <h5><i class="fas fa-user-secret me-2"></i> Your feedback was submitted anonymously</h5>
                         <p>
-                            To track the status of your feedback, please save this unique reference code:
+                            Your feedback will appear in your dashboard with an anonymous indicator, but only you will know 
+                            that you submitted it. No one else will be able to see that you're the author.
+                        </p>
+                        <p>
+                            You can also use this unique reference code to track your feedback:
                         </p>
                         <div class="text-center my-3">
                             <div class="bg-light p-3 rounded">
@@ -35,10 +39,6 @@
                                 <i class="fas fa-copy me-1"></i> Copy to clipboard
                             </button>
                         </div>
-                        <p>
-                            You can use this code to check the status of your feedback later.
-                            Note that as you submitted anonymously, this is the only way to track your feedback.
-                        </p>
                     </div>
                 {% else %}
                     <div class="alert alert-info">
@@ -98,15 +98,9 @@
                 </div>
                 
                 <div class="d-grid gap-2 mt-4">
-                    {% if feedback.is_anonymous %}
-                        <a href="{% url 'home' %}" class="btn btn-primary">
-                            <i class="fas fa-home me-2"></i> Return to Home
-                        </a>
-                    {% else %}
-                        <a href="{% url 'feedback:student_dashboard' %}" class="btn btn-primary">
-                            <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
-                        </a>
-                    {% endif %}
+                    <a href="{% url 'feedback:student_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                    </a>
                 </div>
             </div>
         </div>

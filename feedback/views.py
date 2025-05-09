@@ -26,9 +26,16 @@ class FeedbackCreateView(LoginRequiredMixin, CreateView):
         return kwargs
     
     def form_valid(self, form):
-        # Set the user if not anonymous
-        if not form.cleaned_data.get('is_anonymous'):
-            form.instance.user = self.request.user
+        # Always associate the feedback with the current user
+        # Even for anonymous feedback, we'll store the user reference
+        form.instance.user = self.request.user
+        
+        # Set is_anonymous based on form data
+        is_anonymous = form.cleaned_data.get('is_anonymous', False)
+        form.instance.is_anonymous = is_anonymous
+        
+        # Show in dashboard should always be true for the user's own feedback
+        form.instance.show_in_dashboard = True
         
         # Save the form
         response = super().form_valid(form)
@@ -83,6 +90,10 @@ class FeedbackDetailView(DetailView):
         user = self.request.user
         can_reply = False
         
+        # The student who submitted the feedback should be able to see replies
+        # even if the feedback is anonymous
+        is_submitter = user.is_authenticated and self.object.user == user
+        
         if user.is_authenticated:
             if user.is_admin or user.is_superuser:
                 can_reply = True
@@ -90,6 +101,7 @@ class FeedbackDetailView(DetailView):
                 can_reply = True
         
         context['can_reply'] = can_reply
+        context['is_submitter'] = is_submitter
         
         if can_reply:
             context['reply_form'] = ReplyForm()
@@ -105,9 +117,19 @@ class StudentDashboardView(LoginRequiredMixin, ListView):
     context_object_name = 'feedback_items'
     
     def get_queryset(self):
-        # Show only the feedback submitted by the current user
+        # Show all feedback submitted by the current user, including anonymous
+        # that have show_in_dashboard=True
         user = self.request.user
-        return Feedback.objects.filter(user=user).order_by('-submission_date')
+        
+        # Base queryset: all feedback where user is the author and show_in_dashboard is True
+        queryset = Feedback.objects.filter(user=user, show_in_dashboard=True)
+        
+        # Apply department filter if specified
+        department_id = self.request.GET.get('department')
+        if department_id:
+            queryset = queryset.filter(department_id=department_id)
+            
+        return queryset.order_by('-submission_date')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -161,8 +183,16 @@ def add_reply(request, hash_id):
     
     # Check permissions
     user = request.user
-    if not (user.is_admin or user.is_superuser or 
-            (user.is_faculty and feedback.department == user.profile.department)):
+    
+    # Check if user is the submitter of the feedback, even if anonymous
+    is_submitter = user == feedback.user
+    
+    # Check if user can reply (admin, faculty of the department, or the submitter)
+    can_reply = (user.is_admin or user.is_superuser or 
+                (user.is_faculty and feedback.department == user.profile.department) or
+                is_submitter)
+    
+    if not can_reply:
         messages.error(request, "You don't have permission to reply to this feedback.")
         return redirect('feedback:feedback_detail', hash_id=hash_id)
     
@@ -174,9 +204,10 @@ def add_reply(request, hash_id):
             reply.admin = request.user
             reply.save()
             
-            # Update feedback status to addressed
-            feedback.status = 'addressed'
-            feedback.save()
+            # Update feedback status to addressed if this is a faculty or admin reply
+            if user.is_admin or user.is_faculty:
+                feedback.status = 'addressed'
+                feedback.save()
             
             messages.success(request, 'Reply added successfully!')
             return redirect('feedback:feedback_detail', hash_id=hash_id)
@@ -186,6 +217,7 @@ def add_reply(request, hash_id):
     return render(request, 'feedback/add_reply.html', {
         'form': form,
         'feedback': feedback,
+        'is_submitter': is_submitter,
     })
 
 @login_required
