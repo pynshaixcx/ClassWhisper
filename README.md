@@ -1,40 +1,3 @@
-6. If you have migration issues (like circular dependencies):
-   ```
-   python scripts/reset_migrations.py
-   ```
-   This will delete all migrations, reset the database, and create fresh migrations.
-### Troubleshooting
-
-If you encounter any issues during setup or while running the application:
-
-1. Run the diagnostic tool:
-   ```
-   python scripts/diagnose.py
-   ```
-   This will check for common issues and offer to fix them automatically.
-
-2. If you see "no department list", create departments:
-   ```
-   python scripts/create_departments.py
-   ```
-
-3. If you get database errors, ensure your database settings match your PostgreSQL configuration:
-   - On macOS: Check if you're using the correct username (often your system username)
-   - Verify your PostgreSQL is running: `brew services list` (on macOS with Homebrew)
-
-4. If templates are not working correctly:
-   ```
-   python scripts/debug_templates.py
-   ```
-
-5. If URLs aren't working:
-   ```
-   python scripts/debug_urls.py
-   ```7. If you need to create departments without test data:
-   ```
-   python scripts/create_departments.py
-   ```# Class Whisper
-
 Class Whisper is a web application for anonymous academic feedback, built with Django. It provides a secure platform for students to submit feedback to faculty and administrators while maintaining anonymity.
 
 ## Features
@@ -194,9 +157,6 @@ For production deployment, update the following settings in `class_whisper/setti
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Contributors
-
-- [Your Name](https://github.com/yourusername)
 
 ## Acknowledgements
 

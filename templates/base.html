@@ -11,14 +11,17 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Three.js for 3D effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Custom Minimalist CSS -->
+    <link rel="stylesheet" href="/static/css/minimalist.css">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <i class="fas fa-comment-dots me-2"></i>
@@ -145,8 +148,11 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
     
-    <!-- Custom JavaScript -->
-    <script src="/static/js/main.js"></script>
+    <!-- Custom Animation JavaScript -->
+    <script src="/static/js/animations.js"></script>
+    
+    <!-- 3D Logo Animation Script -->
+    <script src="/static/js/3d-logo.js"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

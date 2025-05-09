@@ -6,13 +6,13 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
+        <div class="card shadow-sm card-3d fade-in">
+            <div class="card-header">
                 <h4 class="mb-0">
                     <i class="fas fa-user-plus me-2"></i> Create an Account
                 </h4>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form method="post" novalidate>
                     {% csrf_token %}
                     
@@ -50,4 +50,26 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add subtle animation to form fields when focused
+        $('.form-control').on('focus', function() {
+            $(this).addClass('focused');
+        }).on('blur', function() {
+            $(this).removeClass('focused');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control.focused {
+        transform: translateY(-2px);
+        transition: transform 0.3s ease;
+    }
+</style>
 {% endblock %}
