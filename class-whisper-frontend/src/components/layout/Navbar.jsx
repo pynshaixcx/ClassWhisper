@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import GlassButton from '../common/GlassButton';
+import GlassButton from '../../common/GlassButton';
 import './Navbar.scss';
 
 const Navbar = () => {

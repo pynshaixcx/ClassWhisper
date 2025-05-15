@@ -1,4 +1,6 @@
-Class Whisper is a web application for anonymous academic feedback, built with Django. It provides a secure platform for students to submit feedback to faculty and administrators while maintaining anonymity.
+# Class Whisper: Anonymous Academic Feedback Platform
+
+Class Whisper is a comprehensive web application for anonymous academic feedback, built with Django and React. It provides a secure platform for students to submit feedback to faculty and administrators while maintaining anonymity.
 
 ## Features
 
@@ -8,22 +10,39 @@ Class Whisper is a web application for anonymous academic feedback, built with D
 - **Moderation System**: Review and manage feedback submissions
 - **Analytics Dashboard**: Track feedback statistics and trends
 - **Faculty Responses**: Faculty can respond to feedback while maintaining student anonymity
+- **Modern UI**: Responsive, glass-morphism design with both light and dark themes
+
+## Technology Stack
+
+### Backend
+- **Framework**: Django 4.2
+- **API**: Django REST Framework
+- **Authentication**: JWT with Simple JWT
+- **Database**: PostgreSQL
+
+### Frontend
+- **Framework**: React 19
+- **Routing**: React Router
+- **State Management**: Context API
+- **Styling**: SCSS with custom theme system
+- **Animations**: Framer Motion
+- **3D Effects**: Three.js
 
 ## Installation
 
 ### Prerequisites
 
 - Python 3.8 or higher
-- pip (Python package manager)
-- virtualenv (recommended)
+- Node.js 16 or higher
+- npm or yarn
 - PostgreSQL 12 or higher
 
-### Setup
+### Backend Setup
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/class_whisper.git
-   cd class_whisper
+   git clone https://github.com/pynshaixcx/ClassWhisper.git
+   cd ClassWhisper
    ```
 
 2. Create and activate a virtual environment:
@@ -37,17 +56,7 @@ Class Whisper is a web application for anonymous academic feedback, built with D
    pip install -r requirements.txt
    ```
 
-4. Complete setup (recommended method):
-   ```
-   python scripts/setup.py
-   ```
-   This script will guide you through:
-   - Setting up the PostgreSQL database
-   - Generating and applying all migrations
-   - Creating a superuser account
-   - Generating test data (optional)
-
-5. Alternative: Individual setup steps:
+4. Alternative: Individual setup steps:
    - Install PostgreSQL if not already installed
    - Option 1: Use the setup script:
      ```
@@ -81,17 +90,40 @@ Class Whisper is a web application for anonymous academic feedback, built with D
    python manage.py migrate
    ```
 
-5. Create a superuser account:
+6. Create a superuser account:
    ```
    python manage.py createsuperuser
    ```
 
-6. Run the development server:
+7. Run the development server:
    ```
    python manage.py runserver
    ```
 
-7. Access the application at http://127.0.0.1:8000/
+8. Access the Django admin at http://127.0.0.1:8000/admin/
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```
+   cd class-whisper-frontend
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Start the development server:
+   ```
+   npm start
+   # or
+   yarn start
+   ```
+
+4. Access the React application at http://localhost:3000/
 
 ### Generate Test Data
 
@@ -114,10 +146,12 @@ This will create test users, departments, tags, and feedback submissions for dev
 - View feedback for their department
 - Respond to feedback
 - Access basic analytics
+- Moderate feedback submissions
 
 ### Administrator
 - Manage departments and tags
 - Moderate feedback submissions
+- Manage user accounts
 - Access comprehensive analytics
 - Configure system settings
 
@@ -131,16 +165,17 @@ class_whisper/
 ├── moderation/               # Feedback moderation
 ├── analytics/                # Feedback analysis
 ├── static/                   # Static files
-└── templates/                # HTML templates
+├── templates/                # Django HTML templates
+└── class-whisper-frontend/   # React frontend application
+    ├── public/               # Public assets
+    ├── src/                  # Source code
+    │   ├── api/              # API services
+    │   ├── components/       # Reusable components
+    │   ├── context/          # React contexts
+    │   ├── pages/            # Page components
+    │   └── styles/           # SCSS styles
+    └── package.json          # Frontend dependencies
 ```
-
-## Technology Stack
-
-- **Backend**: Django (Python)
-- **Frontend**: HTML, CSS, JavaScript, Bootstrap 5
-- **Database**: PostgreSQL
-- **Charts**: Chart.js
-- **Icons**: Font Awesome
 
 ## Production Deployment
 
@@ -153,14 +188,35 @@ For production deployment, update the following settings in `class_whisper/setti
 5. Configure static files serving
 6. Set a secure `SECRET_KEY`
 
+For frontend deployment:
+
+1. Build the React application:
+   ```
+   cd class-whisper-frontend
+   npm run build
+   # or
+   yarn build
+   ```
+
+2. Configure Django to serve the React build files or set up a separate web server.
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-
 ## Acknowledgements
 
 - Django Framework
+- React
 - Bootstrap 5
 - Chart.js
+- Three.js
 - Font Awesome

@@ -5,15 +5,23 @@ crispy-bootstrap5==0.7
 django-filter==23.2
 django-bootstrap5==23.1
 pillow==10.0.0
+django-cors-headers==3.14.0
 
-# Production packages (uncomment for production)
-psycopg2-binary==2.9.6  # PostgreSQL adapter
-gunicorn==21.2.0  # WSGI HTTP server
-whitenoise==6.5.0  # Static file serving
+# REST API
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
+
+# Database
+psycopg2-binary==2.9.6
+
+# Production packages
+gunicorn==21.2.0
+whitenoise==6.5.0
 
 # Development and testing
 faker==18.10.1
+python-dotenv==1.0.0
 
-djangorestframework==3.14.0
-django-cors-headers==3.14.0
-djangorestframework-simplejwt==5.2.2
+# Security
+argon2-cffi==23.1.0  # For password hashing
+dj-rest-auth==5.0.0  # Authentication endpoints
