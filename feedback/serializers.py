@@ -1,8 +1,3 @@
-"""
-Create this file: feedback/serializers.py
-This serializer will convert Feedback model instances to JSON
-"""
-
 from rest_framework import serializers
 from .models import Feedback, Tag, Reply
 from departments.models import Department
@@ -50,7 +45,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'hash_id', 'title', 'content', 'user', 'department', 'department_id',
             'tags', 'tag_ids', 'is_anonymous', 'status', 'submission_date',
-            'updated_at', 'author_display', 'replies', 'replies_count'
+            'updated_at', 'author_display', 'replies', 'replies_count', 'show_in_dashboard'
         ]
         read_only_fields = ['id', 'hash_id', 'user', 'status', 'submission_date', 'updated_at']
     

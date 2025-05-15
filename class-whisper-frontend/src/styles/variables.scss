@@ -1,0 +1,122 @@
+/* src/styles/variables.scss */
+:root {
+    /* Base Colors */
+    --color-primary: #7289da;
+    --color-primary-light: #8ea1e1;
+    --color-primary-dark: #5b6eae;
+    
+    --color-secondary: #99aab5;
+    --color-secondary-light: #b9c3cb;
+    --color-secondary-dark: #7a8c9b;
+    
+    --color-success: #43b581;
+    --color-success-light: #5fc79a;
+    --color-success-dark: #389d6e;
+    
+    --color-danger: #f04747;
+    --color-danger-light: #f26d6d;
+    --color-danger-dark: #d63c3c;
+    
+    --color-warning: #faa61a;
+    --color-warning-light: #fbb746;
+    --color-warning-dark: #e08e00;
+    
+    --color-info: #00b0f4;
+    --color-info-light: #33c0f7;
+    --color-info-dark: #0095cf;
+    
+    /* Light Theme */
+    --light-bg-primary: #ffffff;
+    --light-bg-secondary: #f5f5f5;
+    --light-bg-tertiary: #efefef;
+    --light-text-primary: #121212;
+    --light-text-secondary: #555555;
+    --light-text-muted: #767676;
+    --light-border-light: #e0e0e0;
+    
+    /* Dark Theme */
+    --dark-bg-primary: #181818;
+    --dark-bg-secondary: #222222;
+    --dark-bg-tertiary: #2a2a2a;
+    --dark-text-primary: #ffffff;
+    --dark-text-secondary: #cccccc;
+    --dark-text-muted: #999999;
+    --dark-border-light: #333333;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+    
+    /* Dark Mode Shadows */
+    --dark-shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
+    --dark-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --dark-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+    
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-blur: 10px;
+    
+    /* Dark Glassmorphism */
+    --dark-glass-bg: rgba(30, 30, 30, 0.5);
+    --dark-glass-border: rgba(50, 50, 50, 0.5);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-medium: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-slow: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    
+    /* Border Radius */
+    --border-radius-sm: 0.25rem;
+    --border-radius-md: 0.5rem;
+    --border-radius-lg: 1rem;
+    
+    /* Layout */
+    --header-height: 4rem;
+    --sidebar-width: 250px;
+    --space-unit: 0.5rem;
+    
+    /* Font Sizes */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    /* Font Weights */
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+  }
+  
+  /* Set default theme (light) */
+  .light-theme {
+    --bg-primary: var(--light-bg-primary);
+    --bg-secondary: var(--light-bg-secondary);
+    --bg-tertiary: var(--light-bg-tertiary);
+    --text-primary: var(--light-text-primary);
+    --text-secondary: var(--light-text-secondary);
+    --text-muted: var(--light-text-muted);
+    --border-light: var(--light-border-light);
+  }
+  
+  /* Dark theme overrides */
+  .dark-theme {
+    --bg-primary: var(--dark-bg-primary);
+    --bg-secondary: var(--dark-bg-secondary);
+    --bg-tertiary: var(--dark-bg-tertiary);
+    --text-primary: var(--dark-text-primary);
+    --text-secondary: var(--dark-text-secondary);
+    --text-muted: var(--dark-text-muted);
+    --border-light: var(--dark-border-light);
+    --shadow-sm: var(--dark-shadow-sm);
+    --shadow-md: var(--dark-shadow-md);
+    --shadow-lg: var(--dark-shadow-lg);
+    --glass-bg: var(--dark-glass-bg);
+    --glass-border: var(--dark-glass-border);
+  }
