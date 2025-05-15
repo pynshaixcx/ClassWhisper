@@ -13,3 +13,7 @@ whitenoise==6.5.0  # Static file serving
 
 # Development and testing
 faker==18.10.1
+
+djangorestframework==3.14.0
+django-cors-headers==3.14.0
+djangorestframework-simplejwt==5.2.2

@@ -1,0 +1,86 @@
+/* src/components/common/StatusBadge.scss */
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    transition: all 0.3s ease;
+    border: 1px solid;
+    
+    // Status variants
+    &.status-pending {
+      background: rgba(250, 166, 26, 0.2);
+      color: #faa61a;
+      border-color: rgba(250, 166, 26, 0.3);
+    }
+    
+    &.status-approved {
+      background: rgba(0, 176, 244, 0.2);
+      color: #00b0f4;
+      border-color: rgba(0, 176, 244, 0.3);
+    }
+    
+    &.status-rejected {
+      background: rgba(240, 71, 71, 0.2);
+      color: #f04747;
+      border-color: rgba(240, 71, 71, 0.3);
+    }
+    
+    &.status-addressed {
+      background: rgba(67, 181, 129, 0.2);
+      color: #43b581;
+      border-color: rgba(67, 181, 129, 0.3);
+    }
+    
+    // Animated pulse effect
+    &.animated {
+      animation: statusPulse 2s infinite;
+    }
+    
+    @keyframes statusPulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    // Size variations
+    &.small {
+      padding: 3px 8px;
+      font-size: 0.7rem;
+    }
+    
+    &.large {
+      padding: 7px 15px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  // Glassmorphism version with more blur and transparency
+  .status-badge.glass {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    &.status-pending {
+      background: rgba(250, 166, 26, 0.15);
+    }
+    
+    &.status-approved {
+      background: rgba(0, 176, 244, 0.15);
+    }
+    
+    &.status-rejected {
+      background: rgba(240, 71, 71, 0.15);
+    }
+    
+    &.status-addressed {
+      background: rgba(67, 181, 129, 0.15);
+    }
+  }
