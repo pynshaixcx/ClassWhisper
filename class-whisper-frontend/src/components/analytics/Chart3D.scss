@@ -1,0 +1,394 @@
+/* src/components/analytics/Chart3D.scss */
+@import '../../styles/variables.scss';
+
+.chart-3d {
+  position: relative;
+  transition: all var(--transition-medium);
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .chart-header {
+    padding-bottom: 1.5rem;
+    
+    .chart-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .chart-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
+  }
+  
+  .chart-body {
+    position: relative;
+  }
+  
+  // Empty state
+  .chart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    color: var(--text-muted);
+    
+    i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+    }
+  }
+  
+  // Bar chart
+  &.bar {
+    .bar-chart {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      width: 100%;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      padding-top: 2rem;
+      
+      .bar-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform: rotateX(10deg) rotateY(5deg);
+        transform-style: preserve-3d;
+        
+        .bar-container {
+          width: 80%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          position: relative;
+          
+          .bar {
+            width: 80%;
+            background-color: var(--color-primary);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: height var(--transition-medium);
+            
+            &::before, &::after {
+              content: '';
+              position: absolute;
+              background-color: inherit;
+            }
+            
+            // Right side of 3D bar
+            &::before {
+              width: 10px;
+              height: 100%;
+              right: -10px;
+              top: 0;
+              transform: rotateY(90deg);
+              transform-origin: right;
+              filter: brightness(0.8);
+              border-radius: 0 0 6px 6px;
+            }
+            
+            // Top of 3D bar
+            &::after {
+              width: 100%;
+              height: 10px;
+              left: 0;
+              top: -10px;
+              transform: rotateX(90deg);
+              transform-origin: bottom;
+              filter: brightness(1.2);
+              border-radius: 6px 6px 0 0;
+            }
+            
+            .bar-value {
+              position: absolute;
+              top: -30px;
+              left: 0;
+              right: 0;
+              text-align: center;
+              font-size: 0.85rem;
+              font-weight: var(--font-weight-medium);
+              color: var(--text-primary);
+            }
+          }
+        }
+        
+        .bar-label {
+          margin-top: 0.75rem;
+          font-size: 0.85rem;
+          text-align: center;
+          color: var(--text-secondary);
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      
+      // Shadow under bars
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 15px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+        border-radius: 50%;
+        filter: blur(3px);
+        z-index: -1;
+      }
+    }
+  }
+  
+  // Column chart (horizontal bar)
+  &.column {
+    .column-chart {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 100%;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      
+      .column-item {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        transform: rotateX(5deg) rotateY(10deg);
+        transform-style: preserve-3d;
+        
+        .column-label {
+          width: 25%;
+          font-size: 0.85rem;
+          color: var(--text-secondary);
+          padding-right: 1rem;
+          text-align: right;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        
+        .column-container {
+          flex: 1;
+          height: 25px;
+          display: flex;
+          align-items: center;
+          position: relative;
+          
+          .column {
+            height: 80%;
+            background-color: var(--color-primary);
+            border-radius: 0 6px 6px 0;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: width var(--transition-medium);
+            
+            &::before, &::after {
+              content: '';
+              position: absolute;
+              background-color: inherit;
+            }
+            
+            // Top side of 3D column
+            &::before {
+              width: 100%;
+              height: 6px;
+              left: 0;
+              top: -6px;
+              transform: rotateX(90deg);
+              transform-origin: bottom;
+              filter: brightness(1.2);
+              border-radius: 6px 6px 0 0;
+            }
+            
+            // Right side of 3D column
+            &::after {
+              width: 6px;
+              height: 100%;
+              right: -6px;
+              top: 0;
+              transform: rotateY(90deg);
+              transform-origin: right;
+              filter: brightness(0.8);
+              border-radius: 0 6px 6px 0;
+            }
+            
+            .column-value {
+              position: absolute;
+              right: -40px;
+              top: 0;
+              bottom: 0;
+              display: flex;
+              align-items: center;
+              font-size: 0.85rem;
+              font-weight: var(--font-weight-medium);
+              color: var(--text-primary);
+            }
+          }
+        }
+      }
+      
+      // Shadow on the side
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 15px;
+        background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.05));
+        border-radius: 50%;
+        filter: blur(3px);
+        z-index: -1;
+      }
+    }
+  }
+  
+  // Pie and Donut charts
+  &.pie, &.donut {
+    .pie-chart {
+      display: flex;
+      flex-direction: column;
+      
+      .pie-container {
+        position: relative;
+        width: 100%;
+        height: 70%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 1000px;
+        transform-style: preserve-3d;
+        
+        svg {
+          width: 100%;
+          height: 100%;
+          transform: rotateX(15deg) rotateY(10deg);
+          filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.1));
+          
+          circle {
+            transition: stroke-dashoffset 1s ease;
+          }
+          
+          &.donut {
+            circle:last-child {
+              filter: drop-shadow(inset 0px 0px 10px rgba(0, 0, 0, 0.1));
+            }
+          }
+        }
+        
+        .pie-center-value {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 1.5rem;
+          font-weight: var(--font-weight-semibold);
+          color: var(--text-primary);
+          text-align: center;
+          z-index: 5;
+        }
+      }
+      
+      .pie-legend {
+        margin-top: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          
+          .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            flex-shrink: 0;
+          }
+          
+          .legend-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          
+          .legend-value {
+            font-size: 0.85rem;
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    &.bar {
+      .bar-chart {
+        .bar-item {
+          .bar-container {
+            width: 90%;
+            
+            .bar {
+              width: 90%;
+            }
+          }
+          
+          .bar-label {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+    
+    &.column {
+      .column-chart {
+        .column-item {
+          .column-label {
+            width: 30%;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+    
+    &.pie, &.donut {
+      .pie-chart {
+        .pie-legend {
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          
+          .legend-item {
+            .legend-label, .legend-value {
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

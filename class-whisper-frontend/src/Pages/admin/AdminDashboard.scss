@@ -1,0 +1,227 @@
+/* src/pages/admin/AdminDashboard.scss */
+@import '../../styles/variables.scss';
+
+.admin-dashboard {
+  .dashboard-actions {
+    .admin-quick-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      
+      a {
+        @media (max-width: 768px) {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    
+    .grid-section {
+      &:nth-child(1) { // Feedback by Department
+        grid-column: span 6;
+        
+        @media (max-width: 992px) {
+          grid-column: span 12;
+        }
+      }
+      
+      &:nth-child(2) { // Feedback Status
+        grid-column: span 6;
+        
+        @media (max-width: 992px) {
+          grid-column: span 12;
+        }
+      }
+      
+      &:nth-child(3) { // Feedback Over Time
+        grid-column: span 8;
+        
+        @media (max-width: 992px) {
+          grid-column: span 12;
+        }
+      }
+      
+      &:nth-child(4) { // Popular Tags
+        grid-column: span 4;
+        
+        @media (max-width: 992px) {
+          grid-column: span 12;
+        }
+      }
+      
+      &:nth-child(5) { // System Statistics
+        grid-column: span 4;
+        
+        @media (max-width: 992px) {
+          grid-column: span 6;
+        }
+        
+        @media (max-width: 768px) {
+          grid-column: span 12;
+        }
+      }
+      
+      &:nth-child(6) { // Recent Activity
+        grid-column: span 8;
+        
+        @media (max-width: 992px) {
+          grid-column: span 6;
+        }
+        
+        @media (max-width: 768px) {
+          grid-column: span 12;
+        }
+      }
+    }
+  }
+  
+  .system-stats {
+    height: 100%;
+    
+    h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      padding-bottom: 0.75rem;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        height: 3px;
+        background-color: var(--color-primary);
+        border-radius: 3px;
+      }
+    }
+    
+    .stats-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border-light);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .item-label {
+        color: var(--text-secondary);
+      }
+      
+      .item-value {
+        font-weight: var(--font-weight-medium);
+      }
+    }
+  }
+  
+  .recent-activity {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      padding-bottom: 0.75rem;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 40px;
+        height: 3px;
+        background-color: var(--color-primary);
+        border-radius: 3px;
+      }
+    }
+    
+    .activity-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex: 1;
+      overflow-y: auto;
+      
+      .activity-item {
+        position: relative;
+        padding: 0.75rem 0 0.75rem 2rem;
+        border-bottom: 1px solid var(--border-light);
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0.5rem;
+          top: 1.2rem;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: var(--color-primary);
+        }
+        
+        .activity-time {
+          font-size: 0.8rem;
+          color: var(--text-muted);
+          margin-bottom: 0.25rem;
+        }
+        
+        .activity-content {
+          i {
+            margin-right: 0.5rem;
+            color: var(--text-secondary);
+          }
+        }
+        
+        // Activity type colors
+        &.feedback::before {
+          background-color: var(--color-primary);
+        }
+        
+        &.moderation::before {
+          background-color: #00b0f4; // Info color
+        }
+        
+        &.response::before {
+          background-color: #43b581; // Success color
+        }
+        
+        &.department::before {
+          background-color: #faa61a; // Warning color
+        }
+        
+        &.user::before {
+          background-color: #f04747; // Danger color
+        }
+      }
+    }
+    
+    .view-all {
+      text-align: center;
+      margin-top: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-light);
+      
+      a {
+        color: var(--color-primary);
+        font-size: 0.9rem;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
