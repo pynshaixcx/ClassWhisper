@@ -1,0 +1,94 @@
+/* src/components/feedback/FeedbackCard.scss */
+@import '../../styles/variables.scss';
+
+.feedback-card {
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .feedback-header {
+    margin-bottom: 1rem;
+    
+    .feedback-title-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      
+      .feedback-title {
+        font-size: 1.25rem;
+        margin-bottom: 0;
+        font-weight: var(--font-weight-semibold);
+      }
+    }
+    
+    .feedback-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      
+      > div {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        
+        i {
+          color: var(--text-muted);
+        }
+      }
+    }
+  }
+  
+  .feedback-content {
+    margin-bottom: 1rem;
+    
+    p {
+      margin-bottom: 0;
+      color: var(--text-primary);
+    }
+  }
+  
+  .feedback-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    
+    .tag {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background-color: rgba(var(--color-primary), 0.1);
+      color: var(--color-primary);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.85rem;
+    }
+  }
+  
+  .feedback-footer {
+    display: flex;
+    justify-content: flex-end;
+    
+    .view-details-btn {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.3s ease;
+      
+      &:hover {
+        color: var(--color-primary-dark);
+      }
+    }
+  }
+}
