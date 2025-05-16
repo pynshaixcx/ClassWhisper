@@ -9,11 +9,13 @@ const ThreeJSBackground = ({ intensity = 0.5, density = 100, speed = 0.1, color 
   const { theme } = useTheme();
   
   useEffect(() => {
-    if (!containerRef.current) return;
+    // Store ref value at the start of the effect to use in cleanup
+    const container = containerRef.current;
+    if (!container) return;
     
     // Get container dimensions
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
     
     // Create scene, camera, and renderer
     const scene = new THREE.Scene();
@@ -28,11 +30,11 @@ const ThreeJSBackground = ({ intensity = 0.5, density = 100, speed = 0.1, color 
     renderer.setPixelRatio(window.devicePixelRatio);
     
     // Clear container first
-    while (containerRef.current.firstChild) {
-      containerRef.current.removeChild(containerRef.current.firstChild);
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
     }
     
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
     
     // Set colors based on theme and optional color prop
     const particleColor = color || (theme === 'dark' ? 0xffffff : 0x000000);
@@ -115,10 +117,10 @@ const ThreeJSBackground = ({ intensity = 0.5, density = 100, speed = 0.1, color 
     
     // Handle window resize
     const handleResize = () => {
-      if (!containerRef.current) return;
+      if (!container) return;
       
-      const newWidth = containerRef.current.clientWidth;
-      const newHeight = containerRef.current.clientHeight;
+      const newWidth = container.clientWidth;
+      const newHeight = container.clientHeight;
       
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
@@ -129,10 +131,10 @@ const ThreeJSBackground = ({ intensity = 0.5, density = 100, speed = 0.1, color 
     
     // Mouse movement effect
     const handleMouseMove = (event) => {
-      if (!containerRef.current) return;
+      if (!container) return;
       
       // Calculate mouse position relative to the container
-      const rect = containerRef.current.getBoundingClientRect();
+      const rect = container.getBoundingClientRect();
       const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       
@@ -141,14 +143,14 @@ const ThreeJSBackground = ({ intensity = 0.5, density = 100, speed = 0.1, color 
       particles.rotation.x = mouseY * 0.1;
     };
     
-    containerRef.current.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mousemove', handleMouseMove);
     
     // Cleanup function
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
-      if (containerRef.current) {
-        containerRef.current.removeEventListener('mousemove', handleMouseMove);
+      if (container) {
+        container.removeEventListener('mousemove', handleMouseMove);
       }
       
       // Dispose of Three.js resources

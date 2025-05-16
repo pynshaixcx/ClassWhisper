@@ -73,9 +73,9 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Class Whisper. All rights reserved.
           </p>
           <div className="footer-social">
-            <a href="#" className="social-link"><i className="fab fa-github"></i></a>
-            <a href="#" className="social-link"><i className="fab fa-twitter"></i></a>
-            <a href="#" className="social-link"><i className="fab fa-linkedin"></i></a>
+            <a href="https://github.com/pynshaixcx/ClassWhisper" className="social-link"><i className="fab fa-github"></i></a>
+            <a href="https://twitter.com/classwhisper" className="social-link"><i className="fab fa-twitter"></i></a>
+            <a href="https://linkedin.com/company/classwhisper" className="social-link"><i className="fab fa-linkedin"></i></a>
           </div>
         </div>
       </div>

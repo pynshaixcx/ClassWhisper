@@ -58,12 +58,6 @@ const Chart3D = ({
   
   const maxValue = getMaxValue();
   
-  // Calculate percentages for pie/donut charts
-  const calculatePercentage = (value) => {
-    if (!maxValue || !value) return 0;
-    return Math.round((value / maxValue) * 100);
-  };
-  
   // Format value for display
   const formatValue = (value) => {
     if (value >= 1000000) {

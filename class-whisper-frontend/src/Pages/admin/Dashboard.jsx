@@ -2,9 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import FeedbackService from '../../api/feedback';
-import DepartmentService from '../../api/departments';
-import ModerationService from '../../api/moderation';
 import StatCard from '../../components/analytics/StatCard';
 import Chart3D from '../../components/analytics/Chart3D';
 import GlassButton from '../../components/common/GlassButton';

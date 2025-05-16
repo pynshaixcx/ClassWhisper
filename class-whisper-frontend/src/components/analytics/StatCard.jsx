@@ -70,8 +70,8 @@ const StatCard = ({
     } else {
       setDisplayValue(targetValue);
     }
-  }, [targetValue, animate, isVisible]);
-  
+  }, [targetValue, animate, isVisible, displayValue]); // Added displayValue to dependency array
+
   // Handle intersection observer to check if element is visible
   useEffect(() => {
     if (!cardRef.current || !animate) return;
