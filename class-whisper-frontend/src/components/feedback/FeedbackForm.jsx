@@ -8,7 +8,7 @@ import TagService from '../../api/tags';
 import GlassCard from '../common/GlassCard';
 import GlassButton from '../common/GlassButton';
 import Loading from '../common/Loading';
-import '../styles/FeedbackForm.scss';
+import './FeedbackForm.scss';
 
 const FeedbackForm = ({ departmentId = null }) => {
   const navigate = useNavigate();
