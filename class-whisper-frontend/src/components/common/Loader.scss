@@ -1,0 +1,331 @@
+/* src/components/common/Loader.scss */
+@import '../../styles/variables';
+
+/* Loader Component */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Loader Content - Contains the animation and text */
+  .loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Loader Text */
+  .loader-text {
+    margin-top: var(--space-md);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    text-align: center;
+    max-width: 200px;
+  }
+  
+  /* Full page loader */
+  &.loader-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--z-index-modal);
+  }
+  
+  /* Overlay background */
+  &.loader-overlay {
+    background-color: rgba(var(--color-bg-rgb), 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  
+  /* Sizing variations */
+  &.loader-sm {
+    .spinner-loader, .ring-loader {
+      width: 24px;
+      height: 24px;
+      border-width: 2px;
+    }
+    
+    .pulse-loader {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .dots-loader {
+      .dot {
+        width: 6px;
+        height: 6px;
+        margin: 0 3px;
+      }
+    }
+    
+    .wave-loader {
+      height: 24px;
+      
+      .wave-bar {
+        width: 3px;
+        margin: 0 2px;
+      }
+    }
+    
+    .bar-loader {
+      width: 80px;
+      height: 4px;
+    }
+    
+    .loader-text {
+      font-size: var(--font-size-sm);
+      margin-top: var(--space-sm);
+    }
+  }
+  
+  &.loader-md {
+    .spinner-loader, .ring-loader {
+      width: 36px;
+      height: 36px;
+      border-width: 3px;
+    }
+    
+    .pulse-loader {
+      width: 36px;
+      height: 36px;
+    }
+    
+    .dots-loader {
+      .dot {
+        width: 8px;
+        height: 8px;
+        margin: 0 4px;
+      }
+    }
+    
+    .wave-loader {
+      height: 36px;
+      
+      .wave-bar {
+        width: 4px;
+        margin: 0 3px;
+      }
+    }
+    
+    .bar-loader {
+      width: 120px;
+      height: 6px;
+    }
+  }
+  
+  &.loader-lg {
+    .spinner-loader, .ring-loader {
+      width: 48px;
+      height: 48px;
+      border-width: 4px;
+    }
+    
+    .pulse-loader {
+      width: 48px;
+      height: 48px;
+    }
+    
+    .dots-loader {
+      .dot {
+        width: 10px;
+        height: 10px;
+        margin: 0 5px;
+      }
+    }
+    
+    .wave-loader {
+      height: 48px;
+      
+      .wave-bar {
+        width: 5px;
+        margin: 0 4px;
+      }
+    }
+    
+    .bar-loader {
+      width: 160px;
+      height: 8px;
+    }
+    
+    .loader-text {
+      font-size: var(--font-size-lg);
+      margin-top: var(--space-lg);
+    }
+  }
+  
+  &.loader-xl {
+    .spinner-loader, .ring-loader {
+      width: 64px;
+      height: 64px;
+      border-width: 5px;
+    }
+    
+    .pulse-loader {
+      width: 64px;
+      height: 64px;
+    }
+    
+    .dots-loader {
+      .dot {
+        width: 12px;
+        height: 12px;
+        margin: 0 6px;
+      }
+    }
+    
+    .wave-loader {
+      height: 64px;
+      
+      .wave-bar {
+        width: 6px;
+        margin: 0 5px;
+      }
+    }
+    
+    .bar-loader {
+      width: 200px;
+      height: 10px;
+    }
+    
+    .loader-text {
+      font-size: var(--font-size-xl);
+      margin-top: var(--space-xl);
+      max-width: 300px;
+    }
+  }
+  
+  /* Spinner Loader */
+  &.loader-spinner {
+    .spinner-loader {
+      border: 3px solid rgba(var(--color-primary-rgb), 0.2);
+      border-top: 3px solid var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+  
+  /* Dots Loader */
+  &.loader-dots {
+    .dots-loader {
+      display: flex;
+      align-items: center;
+      
+      .dot {
+        border-radius: 50%;
+        background-color: var(--color-primary);
+      }
+    }
+  }
+  
+  /* Pulse Loader */
+  &.loader-pulse {
+    .pulse-loader {
+      border-radius: 50%;
+      background-color: var(--color-primary);
+    }
+  }
+  
+  /* Wave Loader */
+  &.loader-wave {
+    .wave-loader {
+      display: flex;
+      align-items: center;
+      
+      .wave-bar {
+        height: 100%;
+        background-color: var(--color-primary);
+        border-radius: var(--border-radius-pill);
+        transform-origin: center;
+      }
+    }
+  }
+  
+  /* Ring Loader */
+  &.loader-ring {
+    .ring-loader {
+      border-radius: 50%;
+      border: 3px solid rgba(var(--color-primary-rgb), 0.2);
+      border-top: 3px solid var(--color-primary);
+      animation: spin 1.2s linear infinite;
+    }
+  }
+  
+  /* Bar Loader */
+  &.loader-bar {
+    .bar-loader {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--border-radius-pill);
+      
+      .bar-loader-track {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(var(--color-primary-rgb), 0.2);
+        border-radius: var(--border-radius-pill);
+      }
+      
+      .bar-loader-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background-color: var(--color-primary);
+        border-radius: var(--border-radius-pill);
+      }
+    }
+  }
+  
+  /* Button Loader - special case for use inside buttons */
+  &.button-loader {
+    margin-right: var(--space-xs);
+    
+    .loader-content {
+      flex-direction: row;
+    }
+    
+    .loader-text {
+      margin-top: 0;
+      margin-left: var(--space-xs);
+    }
+  }
+}
+
+/* Spin Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .loader {
+    .spinner-loader, .ring-loader {
+      animation-duration: 2s !important;
+    }
+    
+    .dots-loader .dot, .pulse-loader, .wave-loader .wave-bar, .bar-loader-progress {
+      transition-duration: 2s !important;
+    }
+  }
+}
+
+/* High contrast mode */
+.high-contrast {
+  .loader {
+    .spinner-loader, .ring-loader {
+      border-width: 4px;
+    }
+    
+    &.loader-overlay {
+      background-color: rgba(var(--color-bg-rgb), 0.95);
+    }
+  }
+}

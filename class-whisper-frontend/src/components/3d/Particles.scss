@@ -1,0 +1,56 @@
+/* src/components/3d/Particles.scss */
+@import '../../styles/variables';
+
+.particles-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  
+  /* Make sure the canvas fills the container */
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease;
+  }
+  
+  /* Fixed position for full screen backgrounds */
+  &.fixed {
+    position: fixed;
+  }
+  
+  /* Interactive cursor */
+  &.interactive {
+    cursor: move;
+  }
+  
+  /* Hide particles on small screens to improve performance */
+  @include media-max-sm {
+    opacity: 0.5;
+  }
+  
+  /* Reduce opacity when scrolled down */
+  &.fade-on-scroll {
+    &.scrolled {
+      opacity: 0.3;
+    }
+  }
+  
+  /* Transition for theme changes */
+  &.theme-transition {
+    transition: all 0.5s ease;
+  }
+}
+
+/* Handle reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .particles-container {
+    canvas {
+      opacity: 0.5;
+    }
+  }
+}

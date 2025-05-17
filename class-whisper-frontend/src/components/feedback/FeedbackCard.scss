@@ -1,0 +1,292 @@
+/* src/components/feedback/FeedbackCard.scss */
+@import '../../styles/variables';
+
+.feedback-card {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+  
+  /* Header section */
+  .feedback-card-header {
+    padding-bottom: var(--space-md);
+  }
+  
+  /* Meta information */
+  .feedback-card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+  
+  .feedback-department {
+    font-weight: var(--font-weight-medium);
+  }
+  
+  .feedback-date {
+    color: var(--color-text-muted);
+  }
+  
+  /* Feedback title */
+  .feedback-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-sm);
+    line-height: 1.4;
+    font-weight: var(--font-weight-semibold);
+  }
+  
+  /* Status badges */
+  .feedback-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    
+    .status-badge, .anonymous-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--border-radius-pill);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: var(--space-xs);
+    }
+    
+    .anonymous-badge {
+      background-color: rgba(var(--color-secondary-rgb), 0.1);
+      color: var(--color-text-secondary);
+      
+      i {
+        margin-right: var(--space-xs);
+      }
+    }
+  }
+  
+  /* Tags */
+  .feedback-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    
+    .tag {
+      display: inline-block;
+      padding: calc(var(--space-xs) / 2) var(--space-sm);
+      border-radius: var(--border-radius-pill);
+      background-color: rgba(var(--color-bg-secondary-rgb), 0.7);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      
+      &:hover {
+        background-color: rgba(var(--color-primary-rgb), 0.1);
+        color: var(--color-primary);
+      }
+    }
+  }
+  
+  /* Feedback content */
+  .feedback-content {
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    
+    p {
+      margin: 0;
+    }
+  }
+  
+  /* Faculty response */
+  .feedback-response {
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-md);
+    background-color: rgba(var(--color-bg-secondary-rgb), 0.7);
+    overflow: hidden;
+    
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+      
+      h4 {
+        margin: 0;
+        font-size: var(--font-size-md);
+        color: var(--color-info);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+      }
+      
+      .response-date {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-muted);
+      }
+    }
+    
+    p {
+      margin: 0 0 var(--space-sm);
+      line-height: 1.6;
+    }
+    
+    .response-meta {
+      margin-top: var(--space-sm);
+      font-size: var(--font-size-sm);
+      
+      .response-author {
+        font-style: italic;
+        color: var(--color-text-secondary);
+      }
+    }
+  }
+  
+  /* Card footer */
+  .feedback-card-footer {
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid rgba(var(--color-border-rgb), 0.2);
+    
+    .feedback-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+    }
+    
+    .view-details-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--color-primary);
+      gap: var(--space-xs);
+      font-weight: var(--font-weight-medium);
+      transition: var(--transition-fast);
+      
+      i {
+        transition: transform 0.3s ease;
+      }
+      
+      &:hover {
+        color: var(--color-primary-dark);
+        
+        i {
+          transform: translateX(3px);
+        }
+      }
+    }
+  }
+  
+  /* Color indicators based on status */
+  &.status-pending {
+    border-left: 3px solid var(--color-warning);
+  }
+  
+  &.status-approved {
+    border-left: 3px solid var(--color-info);
+  }
+  
+  &.status-addressed {
+    border-left: 3px solid var(--color-success);
+  }
+  
+  &.status-rejected {
+    border-left: 3px solid var(--color-danger);
+  }
+  
+  /* Preview mode styles */
+  &.preview {
+    cursor: default;
+    box-shadow: var(--shadow-sm);
+    
+    .feedback-title {
+      font-size: var(--font-size-md);
+    }
+    
+    .feedback-card-header {
+      padding-bottom: var(--space-sm);
+    }
+    
+    .feedback-content {
+      max-height: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: var(--space-sm);
+      font-size: var(--font-size-sm);
+    }
+    
+    .feedback-card-footer {
+      margin-top: var(--space-sm);
+      text-align: right;
+    }
+  }
+  
+  /* Expanded state */
+  &.expanded {
+    .feedback-title {
+      color: var(--color-primary);
+    }
+  }
+  
+  /* Hover effects */
+  &:hover:not(.preview) {
+    .feedback-title {
+      color: var(--color-primary);
+    }
+  }
+  
+  /* Animation state */
+  &.animate-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  &.animate-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 500ms, transform 500ms;
+  }
+  
+  &.animate-exit {
+    opacity: 1;
+  }
+  
+  &.animate-exit-active {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  /* Dark theme adjustments */
+  .dark-theme & {
+    .feedback-response {
+      background-color: rgba(var(--color-bg-secondary-rgb), 0.3);
+    }
+    
+    .feedback-tags {
+      .tag {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+  
+  /* Glass effect when enabled */
+  .glassmorphism-enabled & {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    
+    .feedback-response {
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+  }
+}
