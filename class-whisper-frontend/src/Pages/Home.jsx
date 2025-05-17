@@ -1,51 +1,71 @@
 // src/pages/Home.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import ThreeJSBackground from '../components/common/ThreeJSBackground';
-import GlassCard from '../components/common/GlassCard';
-import GlassButton from '../components/common/GlassButton';
+import { useTheme } from '../context/ThemeContext';
+import { useAnimation } from '../context/AnimationContext';
+import { animate, staggeredFadeIn } from '../animations';
+import AnimatedBackground from '../components/3d/AnimatedBackground';
+import Logo3D from '../components/3d/Logo3D';
+import Button from '../components/common/Button';
+import Card from '../components/common/Card';
 import '../styles/Home.scss';
 
 const Home = () => {
   const { isAuthenticated, isStudent, isFaculty, isAdmin } = useAuth();
-  const [animatedSection, setAnimatedSection] = useState(0);
+  const { theme, animation3DEnabled, animationIntensity } = useTheme();
+  const { globalScope, shouldReduceMotion } = useAnimation();
+  const [activeFeature, setActiveFeature] = useState(0);
   
-  // Cycle through sections for animation
+  // Refs for animations
+  const homeRef = useRef(null);
+  const heroContentRef = useRef(null);
+  const featuresRef = useRef(null);
+  const timelineRef = useRef(null);
+  const featureCardsRef = useRef(null);
+  
+  // Set up animations
   useEffect(() => {
+    if (!homeRef.current || shouldReduceMotion) return;
+    
+    // Animate hero content
+    if (heroContentRef.current) {
+      staggeredFadeIn(heroContentRef.current.querySelectorAll('.animate-item'), {
+        duration: 800,
+        delay: 300
+      });
+    }
+    
+    // Set up the feature cards animation
     const interval = setInterval(() => {
-      setAnimatedSection(prev => (prev + 1) % 3);
-    }, 5000);
+      setActiveFeature(prev => (prev + 1) % 6);
+    }, 3000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [shouldReduceMotion]);
   
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
+  // Animate feature card when active feature changes
+  useEffect(() => {
+    if (!featureCardsRef.current || shouldReduceMotion) return;
+    
+    const cards = featureCardsRef.current.querySelectorAll('.feature-card');
+    const activeCard = cards[activeFeature];
+    
+    if (activeCard) {
+      animate(activeCard, {
+        translateY: [0, -10, 0],
+        boxShadow: [
+          'var(--shadow-md)',
+          'var(--shadow-lg)',
+          'var(--shadow-md)'
+        ],
+        duration: 2000,
+        easing: 'easeInOutSine'
+      });
     }
-  };
+  }, [activeFeature, shouldReduceMotion]);
   
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 12
-      }
-    }
-  };
-  
-  // Get CTA link based on user role
+  // Get CTA link and text based on user role
   const getCtaLink = () => {
     if (!isAuthenticated) return '/register';
     if (isStudent) return '/feedback/dashboard';
@@ -54,7 +74,6 @@ const Home = () => {
     return '/';
   };
   
-  // Get CTA text based on user role
   const getCtaText = () => {
     if (!isAuthenticated) return 'Create Account';
     if (isStudent) return 'View Your Feedback';
@@ -62,216 +81,202 @@ const Home = () => {
     return 'Get Started';
   };
   
+  // Timeline steps data
+  const timelineSteps = [
+    {
+      title: 'Submit Feedback',
+      description: 'Students submit feedback to a specific department, with the option to remain anonymous. Tags can be added to categorize the feedback.'
+    },
+    {
+      title: 'Moderation',
+      description: 'Feedback is reviewed by department faculty to ensure it meets community guidelines and contains constructive content.'
+    },
+    {
+      title: 'Faculty Response',
+      description: 'Faculty members respond to the feedback, addressing concerns and providing insights while preserving student anonymity.'
+    },
+    {
+      title: 'Implementation',
+      description: 'Feedback is analyzed and used to make improvements to courses, teaching methods, and department policies.'
+    }
+  ];
+  
+  // Feature cards data
+  const features = [
+    {
+      icon: 'user-secret',
+      title: 'Anonymous Feedback',
+      description: 'Students can submit feedback anonymously, allowing for honest and constructive communication without fear of repercussions.'
+    },
+    {
+      icon: 'building',
+      title: 'Department Channels',
+      description: 'Organize feedback by academic departments, ensuring it reaches the right faculty members and administrators.'
+    },
+    {
+      icon: 'tag',
+      title: 'Tagging System',
+      description: 'Categorize feedback with customizable tags, making it easy to identify patterns and prioritize concerns.'
+    },
+    {
+      icon: 'shield-alt',
+      title: 'Moderation System',
+      description: 'Review and manage feedback submissions with robust moderation tools to ensure constructive communication.'
+    },
+    {
+      icon: 'chart-line',
+      title: 'Analytics Dashboard',
+      description: 'Track feedback statistics and trends with comprehensive analytics to identify areas for improvement.'
+    },
+    {
+      icon: 'reply',
+      title: 'Faculty Responses',
+      description: 'Faculty can respond to feedback while maintaining student anonymity, fostering constructive dialogue.'
+    }
+  ];
+  
   return (
-    <div className="home-page">
-      <ThreeJSBackground intensity={0.4} density={150} speed={0.08} />
+    <div ref={homeRef} className="home-page">
+      {/* 3D Animated Background */}
+      {animation3DEnabled && (
+        <AnimatedBackground 
+          intensity={animationIntensity} 
+          density={150} 
+          speed={0.08} 
+          interactive={true}
+        />
+      )}
       
-      <div className="hero-section">
+      {/* Hero Section */}
+      <section className="hero-section">
         <div className="container">
-          <motion.div
-            className="hero-content"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.h1 variants={itemVariants} className="hero-title">
+          <div ref={heroContentRef} className="hero-content">
+            <h1 className="hero-title animate-item">
               Class <span>Whisper</span>
-            </motion.h1>
+            </h1>
             
-            <motion.p variants={itemVariants} className="hero-subtitle">
+            <p className="hero-subtitle animate-item">
               Anonymous academic feedback platform
-            </motion.p>
+            </p>
             
-            <motion.div variants={itemVariants} className="hero-description">
+            <div className="hero-description animate-item">
               <p>
                 Empower students to provide honest feedback while maintaining anonymity.
                 Create a transparent and constructive academic environment.
               </p>
-            </motion.div>
+            </div>
             
-            <motion.div variants={itemVariants} className="cta-buttons">
+            <div className="cta-buttons animate-item">
               <Link to={getCtaLink()}>
-                <GlassButton variant="primary" size="lg">
+                <Button 
+                  variant="primary" 
+                  size="lg"
+                  rightIcon={<i className="fas fa-arrow-right"></i>}
+                >
                   {getCtaText()}
-                </GlassButton>
+                </Button>
               </Link>
               
               {!isAuthenticated && (
                 <Link to="/login">
-                  <GlassButton variant="secondary" size="lg">
+                  <Button 
+                    variant="secondary" 
+                    size="lg"
+                    leftIcon={<i className="fas fa-sign-in-alt"></i>}
+                  >
                     Sign In
-                  </GlassButton>
+                  </Button>
                 </Link>
               )}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
           
-          <div className="logo-3d-container" id="logo-3d-container">
-            {/* 3D logo will be rendered here by the 3d-logo.js script */}
+          <div className="logo-3d-container">
+            <Logo3D 
+              text="CW" 
+              size={2} 
+              interactive={true} 
+              animated={true}
+            />
           </div>
         </div>
-      </div>
+      </section>
       
-      <div className="features-section">
+      {/* Features Section */}
+      <section ref={featuresRef} className="features-section">
         <div className="container">
           <h2 className="section-title">Key Features</h2>
           
-          <div className="features-grid">
-            <GlassCard 
-              className={`feature-card ${animatedSection === 0 ? 'active' : ''}`}
-              effect3D={true}
-            >
-              <div className="feature-icon">
-                <i className="fas fa-user-secret"></i>
-              </div>
-              <h3>Anonymous Feedback</h3>
-              <p>
-                Students can submit feedback anonymously, allowing for honest and
-                constructive communication without fear of repercussions.
-              </p>
-            </GlassCard>
-            
-            <GlassCard 
-              className={`feature-card ${animatedSection === 1 ? 'active' : ''}`}
-              effect3D={true}
-            >
-              <div className="feature-icon">
-                <i className="fas fa-building"></i>
-              </div>
-              <h3>Department Channels</h3>
-              <p>
-                Organize feedback by academic departments, ensuring it reaches
-                the right faculty members and administrators.
-              </p>
-            </GlassCard>
-            
-            <GlassCard 
-              className={`feature-card ${animatedSection === 2 ? 'active' : ''}`}
-              effect3D={true}
-            >
-              <div className="feature-icon">
-                <i className="fas fa-tag"></i>
-              </div>
-              <h3>Tagging System</h3>
-              <p>
-                Categorize feedback with customizable tags, making it easy to
-                identify patterns and prioritize concerns.
-              </p>
-            </GlassCard>
-            
-            <GlassCard 
-              className={`feature-card ${animatedSection === 0 ? 'active' : ''}`}
-              effect3D={true}
-            >
-              <div className="feature-icon">
-                <i className="fas fa-shield-alt"></i>
-              </div>
-              <h3>Moderation System</h3>
-              <p>
-                Review and manage feedback submissions with robust moderation
-                tools to ensure constructive communication.
-              </p>
-            </GlassCard>
-            
-            <GlassCard 
-              className={`feature-card ${animatedSection === 1 ? 'active' : ''}`}
-              effect3D={true}
-            >
-              <div className="feature-icon">
-                <i className="fas fa-chart-line"></i>
-              </div>
-              <h3>Analytics Dashboard</h3>
-              <p>
-                Track feedback statistics and trends with comprehensive analytics
-                to identify areas for improvement.
-              </p>
-            </GlassCard>
-            
-            <GlassCard 
-              className={`feature-card ${animatedSection === 2 ? 'active' : ''}`}
-              effect3D={true}
-            >
-              <div className="feature-icon">
-                <i className="fas fa-reply"></i>
-              </div>
-              <h3>Faculty Responses</h3>
-              <p>
-                Faculty can respond to feedback while maintaining student
-                anonymity, fostering constructive dialogue.
-              </p>
-            </GlassCard>
+          <div ref={featureCardsRef} className="features-grid">
+            {features.map((feature, index) => (
+              <Card 
+                key={index}
+                className={`feature-card ${activeFeature === index ? 'active' : ''}`}
+                effect3D={animation3DEnabled}
+                glass={true}
+                hoverable={true}
+              >
+                <div className="feature-icon">
+                  <i className={`fas fa-${feature.icon}`}></i>
+                </div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </Card>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
       
-      <div className="how-it-works-section">
+      {/* How It Works Section */}
+      <section ref={timelineRef} className="how-it-works-section">
         <div className="container">
           <h2 className="section-title">How It Works</h2>
           
           <div className="timeline">
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3>Step 1: Submit Feedback</h3>
-                <p>
-                  Students submit feedback to a specific department, with the option
-                  to remain anonymous. Tags can be added to categorize the feedback.
-                </p>
+            {timelineSteps.map((step, index) => (
+              <div key={index} className="timeline-item">
+                <div className="timeline-marker"></div>
+                <Card 
+                  className="timeline-content"
+                  effect3D={animation3DEnabled}
+                  glass={true}
+                  hoverable={true}
+                >
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </Card>
               </div>
-            </div>
-            
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3>Step 2: Moderation</h3>
-                <p>
-                  Feedback is reviewed by department faculty to ensure it meets
-                  community guidelines and contains constructive content.
-                </p>
-              </div>
-            </div>
-            
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3>Step 3: Faculty Response</h3>
-                <p>
-                  Faculty members respond to the feedback, addressing concerns
-                  and providing insights while preserving student anonymity.
-                </p>
-              </div>
-            </div>
-            
-            <div className="timeline-item">
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h3>Step 4: Implementation</h3>
-                <p>
-                  Feedback is analyzed and used to make improvements to courses,
-                  teaching methods, and department policies.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
       
-      <div className="cta-section">
+      {/* CTA Section */}
+      <section className="cta-section">
         <div className="container">
-          <GlassCard className="cta-card" effect3D={false} hoverable={false}>
+          <Card 
+            className="cta-card"
+            effect3D={animation3DEnabled}
+            glass={true}
+            hoverable={false}
+          >
             <h2>Ready to get started?</h2>
             <p>
               Join Class Whisper today and help build a better academic environment
               through constructive feedback and transparent communication.
             </p>
             <Link to={getCtaLink()}>
-              <GlassButton variant="primary" size="lg">
+              <Button 
+                variant="primary" 
+                size="lg"
+                rightIcon={<i className="fas fa-arrow-right"></i>}
+              >
                 {getCtaText()}
-              </GlassButton>
+              </Button>
             </Link>
-          </GlassCard>
+          </Card>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

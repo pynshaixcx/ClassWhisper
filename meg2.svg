@@ -1,0 +1,67 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="white"/>
+  
+  <!-- Meghalaya-focused logo design -->
+  
+  <!-- Background shape resembling Khasi hills -->
+  <path d="M100,350 Q250,200 400,300 Q550,200 700,350 L700,400 L100,400 Z" 
+        fill="#E8F5E9" opacity="0.7" />
+  
+  <!-- Main symbol incorporating Meghalaya elements -->
+  <g transform="translate(200, 150)">
+    <!-- Living root bridge structure - iconic Meghalaya element -->
+    <path d="M60,130 Q200,50 340,130" fill="none" stroke="#5D4037" stroke-width="12" stroke-linecap="round"/>
+    <path d="M80,140 Q200,70 320,140" fill="none" stroke="#795548" stroke-width="8" stroke-linecap="round"/>
+    <path d="M100,150 Q200,90 300,150" fill="none" stroke="#8D6E63" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Hanging root elements -->
+    <path d="M120,130 L120,170" fill="none" stroke="#795548" stroke-width="3" stroke-linecap="round"/>
+    <path d="M160,110 L160,170" fill="none" stroke="#795548" stroke-width="3" stroke-linecap="round"/>
+    <path d="M200,100 L200,170" fill="none" stroke="#795548" stroke-width="3" stroke-linecap="round"/>
+    <path d="M240,110 L240,170" fill="none" stroke="#795548" stroke-width="3" stroke-linecap="round"/>
+    <path d="M280,130 L280,170" fill="none" stroke="#795548" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Cherrapunji clouds and rain - wettest place on earth -->
+    <path d="M50,70 Q80,40 110,50 Q140,20 170,50 Q200,30 230,50 Q260,30 290,50 Q320,30 350,70" 
+          fill="none" stroke="#BBDEFB" stroke-width="8" stroke-linecap="round"/>
+    
+    <!-- Rain drops -->
+    <path d="M100,70 L100,90" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M140,70 L140,100" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M180,70 L180,95" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M220,70 L220,100" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M260,70 L260,90" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M300,70 L300,95" fill="none" stroke="#64B5F6" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Digital tech elements integrated with nature - circuit patterns following the root bridge -->
+    <path d="M100,140 L140,140 L180,120 L220,140 L260,120 L300,140" 
+          fill="none" stroke="#26A69A" stroke-width="2" stroke-dasharray="6,3"/>
+    
+    <!-- Khasi traditional pattern element -->
+    <path d="M120,180 L160,200 L200,180 L240,200 L280,180" 
+          fill="none" stroke="#FF7043" stroke-width="4" stroke-linecap="round"/>
+    <path d="M140,190 L180,170 L220,190 L260,170" 
+          fill="none" stroke="#FF7043" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Digital connectivity nodes integrated with natural elements -->
+    <circle cx="140" cy="140" r="6" fill="#00BFA5"/>
+    <circle cx="180" cy="120" r="6" fill="#00BFA5"/>
+    <circle cx="220" cy="140" r="6" fill="#00BFA5"/>
+    <circle cx="260" cy="120" r="6" fill="#00BFA5"/>
+  </g>
+  
+  <!-- Text with typography inspired by flowing rivers and hills -->
+  <g transform="translate(200, 380)">
+    <!-- MEGHALAYA - inspired by rolling hills -->
+    <text font-family="Montserrat, sans-serif" font-weight="700" font-size="54" fill="#1B5E20" x="200" y="0" text-anchor="middle">
+      <tspan>MEGHALAYA</tspan>
+    </text>
+    
+    <!-- TECHNOLOGY PARK - with natural flow -->
+    <text font-family="Montserrat, sans-serif" font-weight="500" font-size="36" fill="#00695C" x="200" y="50" text-anchor="middle">
+      <tspan>TECHNOLOGY PARK</tspan>
+    </text>
+  </g>
+
+</svg>

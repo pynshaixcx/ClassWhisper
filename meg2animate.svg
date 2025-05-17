@@ -1,0 +1,247 @@
+import React, { useEffect, useRef } from 'react';
+
+const AnimatedLogo = () => {
+  const svgRef = useRef(null);
+  
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    
+    // Animation timing
+    const duration = 4000; // 4 seconds total animation
+    
+    // Elements to animate
+    const clouds = svg.querySelector('#clouds');
+    const raindrops = svg.querySelectorAll('.raindrop');
+    const rootBridgeMain = svg.querySelectorAll('.root-bridge-main');
+    const rootBridgeSecondary = svg.querySelectorAll('.root-bridge-secondary');
+    const hangingRoots = svg.querySelectorAll('.hanging-root');
+    const culturalPatterns = svg.querySelectorAll('.cultural-pattern');
+    const circuitPatterns = svg.querySelector('#circuit-pattern');
+    const techNodes = svg.querySelectorAll('.tech-node');
+    const meghalayaText = svg.querySelector('#meghalaya-text');
+    const technologyText = svg.querySelector('#technology-text');
+    
+    // Reset initial states
+    clouds.style.opacity = 0;
+    raindrops.forEach(drop => { 
+      drop.style.opacity = 0;
+      drop.style.transform = 'translateY(-20px)';
+    });
+    rootBridgeMain.forEach(bridge => { bridge.style.strokeDasharray = bridge.getTotalLength(); bridge.style.strokeDashoffset = bridge.getTotalLength(); });
+    rootBridgeSecondary.forEach(bridge => { bridge.style.strokeDasharray = bridge.getTotalLength(); bridge.style.strokeDashoffset = bridge.getTotalLength(); });
+    hangingRoots.forEach(root => { root.style.strokeDasharray = root.getTotalLength(); root.style.strokeDashoffset = root.getTotalLength(); });
+    culturalPatterns.forEach(pattern => { pattern.style.strokeDasharray = pattern.getTotalLength(); pattern.style.strokeDashoffset = pattern.getTotalLength(); });
+    circuitPatterns.style.opacity = 0;
+    techNodes.forEach(node => { node.style.opacity = 0; node.style.transform = 'scale(0)'; });
+    meghalayaText.style.opacity = 0;
+    technologyText.style.opacity = 0;
+    
+    // Animation timeline
+    setTimeout(() => {
+      // 1. Cloud Formation
+      clouds.style.transition = 'opacity 0.8s ease-in-out';
+      clouds.style.opacity = 1;
+    }, 0);
+    
+    // 2. Rainfall Sequence
+    setTimeout(() => {
+      raindrops.forEach((drop, index) => {
+        setTimeout(() => {
+          drop.style.transition = 'opacity 0.5s ease-in-out, transform 1.5s ease-in-out';
+          drop.style.opacity = 1;
+          drop.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    }, 800);
+    
+    // 3. Growing Root Bridge
+    setTimeout(() => {
+      rootBridgeMain.forEach((bridge, index) => {
+        bridge.style.transition = 'stroke-dashoffset 1.2s ease-in-out';
+        bridge.style.strokeDashoffset = 0;
+      });
+      
+      setTimeout(() => {
+        rootBridgeSecondary.forEach((bridge, index) => {
+          bridge.style.transition = 'stroke-dashoffset 1s ease-in-out';
+          bridge.style.strokeDashoffset = 0;
+        });
+      }, 300);
+      
+      setTimeout(() => {
+        hangingRoots.forEach((root, index) => {
+          setTimeout(() => {
+            root.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+            root.style.strokeDashoffset = 0;
+          }, index * 100);
+        });
+      }, 600);
+    }, 1500);
+    
+    // 4. Emerging Cultural Patterns
+    setTimeout(() => {
+      culturalPatterns.forEach((pattern, index) => {
+        setTimeout(() => {
+          pattern.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+          pattern.style.strokeDashoffset = 0;
+        }, index * 200);
+      });
+    }, 2300);
+    
+    // 5. Illuminating Technology
+    setTimeout(() => {
+      circuitPatterns.style.transition = 'opacity 0.8s ease-in-out';
+      circuitPatterns.style.opacity = 1;
+      
+      setTimeout(() => {
+        techNodes.forEach((node, index) => {
+          setTimeout(() => {
+            node.style.transition = 'opacity 0.5s ease-in-out, transform 0.5s ease-in-out';
+            node.style.opacity = 1;
+            node.style.transform = 'scale(1)';
+          }, index * 150);
+        });
+      }, 400);
+    }, 2800);
+    
+    // 6. Text Reveal
+    setTimeout(() => {
+      meghalayaText.style.transition = 'opacity 0.8s ease-in-out';
+      meghalayaText.style.opacity = 1;
+      
+      setTimeout(() => {
+        technologyText.style.transition = 'opacity 0.8s ease-in-out';
+        technologyText.style.opacity = 1;
+      }, 300);
+    }, 3400);
+    
+    // Restart animation every 10 seconds
+    const restartAnimation = () => {
+      // Reset all elements
+      clouds.style.opacity = 0;
+      raindrops.forEach(drop => { 
+        drop.style.opacity = 0;
+        drop.style.transform = 'translateY(-20px)';
+      });
+      rootBridgeMain.forEach(bridge => { bridge.style.strokeDashoffset = bridge.getTotalLength(); });
+      rootBridgeSecondary.forEach(bridge => { bridge.style.strokeDashoffset = bridge.getTotalLength(); });
+      hangingRoots.forEach(root => { bridge.style.strokeDashoffset = root.getTotalLength(); });
+      culturalPatterns.forEach(pattern => { pattern.style.strokeDashoffset = pattern.getTotalLength(); });
+      circuitPatterns.style.opacity = 0;
+      techNodes.forEach(node => { node.style.opacity = 0; node.style.transform = 'scale(0)'; });
+      meghalayaText.style.opacity = 0;
+      technologyText.style.opacity = 0;
+      
+      // Brief pause before restarting
+      setTimeout(() => {
+        // Restart the animation sequence
+        // (Same animation sequence as above)
+      }, 500);
+    };
+    
+    // Set up restart interval
+    const animationInterval = setInterval(restartAnimation, 10000);
+    
+    // Clean up
+    return () => clearInterval(animationInterval);
+  }, []);
+
+  return (
+    <div className="logo-container flex items-center justify-center h-full w-full bg-white p-4">
+      <svg 
+        ref={svgRef}
+        viewBox="0 0 800 600" 
+        className="w-full max-w-2xl"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Background */}
+        <rect width="800" height="600" fill="white"/>
+        
+        {/* Background shape resembling Khasi hills */}
+        <path d="M100,350 Q250,200 400,300 Q550,200 700,350 L700,400 L100,400 Z" 
+              fill="#E8F5E9" opacity="0.7" />
+        
+        {/* Main symbol incorporating Meghalaya elements */}
+        <g transform="translate(200, 150)">
+          {/* Living root bridge structure - iconic Meghalaya element */}
+          <path d="M60,130 Q200,50 340,130" 
+                className="root-bridge-main"
+                fill="none" stroke="#5D4037" strokeWidth="12" strokeLinecap="round"/>
+          <path d="M80,140 Q200,70 320,140" 
+                className="root-bridge-secondary"
+                fill="none" stroke="#795548" strokeWidth="8" strokeLinecap="round"/>
+          <path d="M100,150 Q200,90 300,150" 
+                className="root-bridge-secondary"
+                fill="none" stroke="#8D6E63" strokeWidth="6" strokeLinecap="round"/>
+          
+          {/* Hanging root elements */}
+          <path d="M120,130 L120,170" 
+                className="hanging-root"
+                fill="none" stroke="#795548" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M160,110 L160,170" 
+                className="hanging-root"
+                fill="none" stroke="#795548" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M200,100 L200,170" 
+                className="hanging-root"
+                fill="none" stroke="#795548" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M240,110 L240,170" 
+                className="hanging-root"
+                fill="none" stroke="#795548" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M280,130 L280,170" 
+                className="hanging-root"
+                fill="none" stroke="#795548" strokeWidth="3" strokeLinecap="round"/>
+          
+          {/* Cherrapunji clouds and rain - wettest place on earth */}
+          <path id="clouds" d="M50,70 Q80,40 110,50 Q140,20 170,50 Q200,30 230,50 Q260,30 290,50 Q320,30 350,70" 
+                fill="none" stroke="#BBDEFB" strokeWidth="8" strokeLinecap="round"/>
+          
+          {/* Rain drops */}
+          <path className="raindrop" d="M100,70 L100,90" 
+                fill="none" stroke="#64B5F6" strokeWidth="3" strokeLinecap="round"/>
+          <path className="raindrop" d="M140,70 L140,100" 
+                fill="none" stroke="#64B5F6" strokeWidth="3" strokeLinecap="round"/>
+          <path className="raindrop" d="M180,70 L180,95" 
+                fill="none" stroke="#64B5F6" strokeWidth="3" strokeLinecap="round"/>
+          <path className="raindrop" d="M220,70 L220,100" 
+                fill="none" stroke="#64B5F6" strokeWidth="3" strokeLinecap="round"/>
+          <path className="raindrop" d="M260,70 L260,90" 
+                fill="none" stroke="#64B5F6" strokeWidth="3" strokeLinecap="round"/>
+          <path className="raindrop" d="M300,70 L300,95" 
+                fill="none" stroke="#64B5F6" strokeWidth="3" strokeLinecap="round"/>
+          
+          {/* Digital tech elements integrated with nature - circuit patterns following the root bridge */}
+          <path id="circuit-pattern" d="M100,140 L140,140 L180,120 L220,140 L260,120 L300,140" 
+                fill="none" stroke="#26A69A" strokeWidth="2" strokeDasharray="6,3"/>
+          
+          {/* Khasi traditional pattern element */}
+          <path className="cultural-pattern" d="M120,180 L160,200 L200,180 L240,200 L280,180" 
+                fill="none" stroke="#FF7043" strokeWidth="4" strokeLinecap="round"/>
+          <path className="cultural-pattern" d="M140,190 L180,170 L220,190 L260,170" 
+                fill="none" stroke="#FF7043" strokeWidth="4" strokeLinecap="round"/>
+          
+          {/* Digital connectivity nodes integrated with natural elements */}
+          <circle className="tech-node" cx="140" cy="140" r="6" fill="#00BFA5"/>
+          <circle className="tech-node" cx="180" cy="120" r="6" fill="#00BFA5"/>
+          <circle className="tech-node" cx="220" cy="140" r="6" fill="#00BFA5"/>
+          <circle className="tech-node" cx="260" cy="120" r="6" fill="#00BFA5"/>
+        </g>
+        
+        {/* Text with typography inspired by flowing rivers and hills */}
+        <g transform="translate(200, 380)">
+          {/* MEGHALAYA - inspired by rolling hills */}
+          <text id="meghalaya-text" fontFamily="Montserrat, sans-serif" fontWeight="700" fontSize="54" fill="#1B5E20" x="200" y="0" textAnchor="middle">
+            <tspan>MEGHALAYA</tspan>
+          </text>
+          
+          {/* TECHNOLOGY PARK - with natural flow */}
+          <text id="technology-text" fontFamily="Montserrat, sans-serif" fontWeight="500" fontSize="36" fill="#00695C" x="200" y="50" textAnchor="middle">
+            <tspan>TECHNOLOGY PARK</tspan>
+          </text>
+        </g>
+      </svg>
+    </div>
+  );
+};
+
+export default AnimatedLogo;

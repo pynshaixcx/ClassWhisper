@@ -1,0 +1,42 @@
+/* src/components/3d/AnimatedBackground.scss */
+.animated-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    
+    /* Make sure the canvas fills the container */
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Add interaction styling */
+    &.interactive {
+      cursor: move;
+    }
+    
+    /* Fixed position for full screen backgrounds */
+    &.fixed {
+      position: fixed;
+    }
+    
+    /* Parallax effect for scrolling */
+    &.parallax {
+      will-change: transform;
+      transform: translateZ(0);
+    }
+    
+    /* Lower intensity version */
+    &.subtle {
+      opacity: 0.5;
+    }
+    
+    /* Transition for theme changes */
+    transition: opacity 0.5s ease;
+  }
