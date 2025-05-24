@@ -1,0 +1,749 @@
+{% extends 'base.html' %}
+{% load feedback_extras %}
+
+{% block title %}{{ report.title }} - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>
+            <i class="fas fa-file-alt me-2"></i> {{ report.title }}
+            <span class="badge bg-info">{{ report.get_report_type_display }}</span>
+        </h2>
+        {% if report.description %}
+            <p class="lead">{{ report.description }}</p>
+        {% endif %}
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{% url 'analytics:export_report' pk=report.id %}" class="btn btn-primary">
+                <i class="fas fa-download me-2"></i> Export CSV
+            </a>
+            <a href="{% url 'analytics:report_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Reports
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Report Information</h5>
+            <span class="text-muted">Generated: {{ report.created_at|date:"F j, Y, g:i a" }}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Report Type:</th>
+                        <td>{{ report.get_report_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Department:</th>
+                        <td>
+                            {% if report.department %}
+                                {{ report.department.name }}
+                            {% else %}
+                                All Departments
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Created By:</th>
+                        <td>{{ report.created_by.get_full_name|default:report.created_by.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Feedback:</th>
+                        <td>{{ report.results.total_feedback }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-8">
+                <div class="alert alert-info mb-0">
+                    <h6>About This Report</h6>
+                    <p class="mb-0">
+                        {% if report.report_type == 'department' %}
+                            This report analyzes feedback distribution across departments, showing which
+                            departments receive the most feedback and providing a breakdown of feedback status
+                            by department.
+                        {% elif report.report_type == 'tag' %}
+                            This report examines the usage of tags across feedback submissions, helping
+                            identify the most common topics and concerns in feedback.
+                        {% elif report.report_type == 'time' %}
+                            This report tracks feedback submission patterns over time, helping identify
+                            trends, peak periods, and seasonal variations.
+                        {% elif report.report_type == 'status' %}
+                            This report analyzes the status distribution of feedback items and measures
+                            response time and resolution effectiveness.
+                        {% else %}
+                            Custom analysis report of feedback data.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if report.report_type == 'department' %}
+    <!-- Department Analysis Report -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Feedback by Department</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Department Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="departmentPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Status Breakdown by Department</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Pending</th>
+                            <th>Approved</th>
+                            <th>Rejected</th>
+                            <th>Addressed</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept_name, status_data in report.results.department_status.items %}
+                            <tr>
+                                <td>{{ dept_name }}</td>
+                                {% with pending=0 approved=0 rejected=0 addressed=0 %}
+                                    {% for status in status_data %}
+                                        {% if status.status == 'pending' %}
+                                            {% with pending=status.count %}
+                                                <td>{{ pending }}</td>
+                                            {% endwith %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for status in status_data %}
+                                        {% if status.status == 'approved' %}
+                                            {% with approved=status.count %}
+                                                <td>{{ approved }}</td>
+                                            {% endwith %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for status in status_data %}
+                                        {% if status.status == 'rejected' %}
+                                            {% with rejected=status.count %}
+                                                <td>{{ rejected }}</td>
+                                            {% endwith %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for status in status_data %}
+                                        {% if status.status == 'addressed' %}
+                                            {% with addressed=status.count %}
+                                                <td>{{ addressed }}</td>
+                                            {% endwith %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endwith %}
+                                <td>
+                                    {% with total=0 %}
+                                        {% for status in status_data %}
+                                            {% with total=total|add:status.count %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                        {{ total }}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% elif report.report_type == 'tag' %}
+    <!-- Tag Analysis Report -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Top Tags Overall</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="tagChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Top Tags List</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Tag</th>
+                                    <th>Count</th>
+                                    <th>%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tag in report.results.top_tags %}
+                                    <tr>
+                                        <td>{{ tag.tags__name }}</td>
+                                        <td>{{ tag.count }}</td>
+                                        <td>{{ tag.count|div:report.results.total_feedback|mul:100|floatformat:1 }}%</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Top Tags by Department</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for dept_name, tags in report.results.tag_by_department.items %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">{{ dept_name }}</h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Tag</th>
+                                                <th>Count</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for tag in tags %}
+                                                <tr>
+                                                    <td>{{ tag.tags__name }}</td>
+                                                    <td>{{ tag.count }}</td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="2" class="text-center">No data available</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% elif report.report_type == 'time' %}
+    <!-- Time-based Analysis Report -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Feedback Over Time (Daily)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="dailyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Weekly Trends</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Monthly Trends</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% elif report.report_type == 'status' %}
+    <!-- Status Analysis Report -->
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Status Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Status Breakdown</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for status in report.results.status_data %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge 
+                                                {% if status.status == 'pending' %}bg-warning text-dark
+                                                {% elif status.status == 'approved' %}bg-info
+                                                {% elif status.status == 'rejected' %}bg-danger
+                                                {% elif status.status == 'addressed' %}bg-success
+                                                {% endif %}">
+                                                {{ status.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ status.count }}</td>
+                                        <td>{{ status.percentage|floatformat:1 }}%</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Response Time</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-4 mb-3">
+                        {{ report.results.avg_response_time|floatformat:1 }}
+                        <span class="h5">hours</span>
+                    </div>
+                    <p class="text-muted">Average Response Time</p>
+                    
+                    <hr>
+                    
+                    <div class="row text-center mt-4">
+                        <div class="col-6">
+                            <h2>{{ report.results.response_times|length }}</h2>
+                            <p class="text-muted">Responses Analyzed</p>
+                        </div>
+                        <div class="col-6">
+                            <h2>
+                                {% with under24=0 %}
+                                    {% for time in report.results.response_times %}
+                                        {% if time <= 24 %}
+                                            {% with under24=under24|add:1 %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ under24|div:report.results.response_times|length|mul:100|floatformat:0 }}%
+                                {% endwith %}
+                            </h2>
+                            <p class="text-muted">Responded in < 24h</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Status by Department</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for dept_name, status_data in report.results.status_by_department.items %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">{{ dept_name }}</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="height: 200px;">
+                                    <canvas id="deptStatus{{ forloop.counter }}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize charts based on report type
+        {% if report.report_type == 'department' %}
+            // Department bar chart
+            var deptData = {{ report.results.department_data|safe }};
+            var deptLabels = deptData.map(item => item.department__name || 'Unknown');
+            var deptCounts = deptData.map(item => item.count);
+            
+            var deptCtx = document.getElementById('departmentChart').getContext('2d');
+            new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: deptLabels,
+                    datasets: [{
+                        label: 'Feedback Count',
+                        data: deptCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Department pie chart
+            var deptPieCtx = document.getElementById('departmentPieChart').getContext('2d');
+            new Chart(deptPieCtx, {
+                type: 'pie',
+                data: {
+                    labels: deptLabels,
+                    datasets: [{
+                        data: deptCounts,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(199, 199, 199, 0.6)',
+                            'rgba(83, 102, 255, 0.6)',
+                            'rgba(40, 159, 64, 0.6)',
+                            'rgba(210, 199, 199, 0.6)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        
+        {% elif report.report_type == 'tag' %}
+            // Tag horizontal bar chart
+            var tagData = {{ report.results.top_tags|safe }};
+            var tagLabels = tagData.map(item => item.tags__name || 'No Tag');
+            var tagCounts = tagData.map(item => item.count);
+            
+            var tagCtx = document.getElementById('tagChart').getContext('2d');
+            new Chart(tagCtx, {
+                type: 'bar',
+                data: {
+                    labels: tagLabels,
+                    datasets: [{
+                        axis: 'y',
+                        label: 'Feedback Count',
+                        data: tagCounts,
+                        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        
+        {% elif report.report_type == 'time' %}
+            // Daily time chart
+            var dailyData = {{ report.results.daily_data|safe }};
+            var dailyLabels = dailyData.map(item => {
+                var date = new Date(item.date);
+                return date.toLocaleDateString();
+            });
+            var dailyCounts = dailyData.map(item => item.count);
+            
+            var dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Daily Feedback',
+                        data: dailyCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Weekly time chart
+            var weeklyData = {{ report.results.weekly_data|safe }};
+            var weeklyLabels = weeklyData.map(item => {
+                var date = new Date(item.date);
+                return 'Week of ' + date.toLocaleDateString();
+            });
+            var weeklyCounts = weeklyData.map(item => item.count);
+            
+            var weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+            new Chart(weeklyCtx, {
+                type: 'bar',
+                data: {
+                    labels: weeklyLabels,
+                    datasets: [{
+                        label: 'Weekly Feedback',
+                        data: weeklyCounts,
+                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Monthly time chart
+            var monthlyData = {{ report.results.monthly_data|safe }};
+            var monthlyLabels = monthlyData.map(item => {
+                var date = new Date(item.date);
+                return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+            });
+            var monthlyCounts = monthlyData.map(item => item.count);
+            
+            var monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyLabels,
+                    datasets: [{
+                        label: 'Monthly Feedback',
+                        data: monthlyCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        
+        {% elif report.report_type == 'status' %}
+            // Status pie chart
+            var statusData = {{ report.results.status_data|safe }};
+            var statusLabels = statusData.map(item => {
+                var status = item.status || 'Unknown';
+                return status.charAt(0).toUpperCase() + status.slice(1);
+            });
+            var statusCounts = statusData.map(item => item.count);
+            var statusColors = statusData.map(item => {
+                switch(item.status) {
+                    case 'pending': return 'rgba(255, 193, 7, 0.8)';
+                    case 'approved': return 'rgba(23, 162, 184, 0.8)';
+                    case 'rejected': return 'rgba(220, 53, 69, 0.8)';
+                    case 'addressed': return 'rgba(40, 167, 69, 0.8)';
+                    default: return 'rgba(108, 117, 125, 0.8)';
+                }
+            });
+            
+            var statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'pie',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusCounts,
+                        backgroundColor: statusColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+            
+            // Department status charts
+            {% for dept_name, status_data in report.results.status_by_department.items %}
+                var deptStatusCtx{{ forloop.counter }} = document.getElementById('deptStatus{{ forloop.counter }}').getContext('2d');
+                var deptStatusLabels{{ forloop.counter }} = [];
+                var deptStatusCounts{{ forloop.counter }} = [];
+                var deptStatusColors{{ forloop.counter }} = [];
+                
+                {% for status in status_data %}
+                    deptStatusLabels{{ forloop.parentloop.counter }}.push('{{ status.status|title }}');
+                    deptStatusCounts{{ forloop.parentloop.counter }}.push({{ status.count }});
+                    
+                    {% if status.status == 'pending' %}
+                        deptStatusColors{{ forloop.parentloop.counter }}.push('rgba(255, 193, 7, 0.8)');
+                    {% elif status.status == 'approved' %}
+                        deptStatusColors{{ forloop.parentloop.counter }}.push('rgba(23, 162, 184, 0.8)');
+                    {% elif status.status == 'rejected' %}
+                        deptStatusColors{{ forloop.parentloop.counter }}.push('rgba(220, 53, 69, 0.8)');
+                    {% elif status.status == 'addressed' %}
+                        deptStatusColors{{ forloop.parentloop.counter }}.push('rgba(40, 167, 69, 0.8)');
+                    {% else %}
+                        deptStatusColors{{ forloop.parentloop.counter }}.push('rgba(108, 117, 125, 0.8)');
+                    {% endif %}
+                {% endfor %}
+                
+                new Chart(deptStatusCtx{{ forloop.counter }}, {
+                    type: 'doughnut',
+                    data: {
+                        labels: deptStatusLabels{{ forloop.counter }},
+                        datasets: [{
+                            data: deptStatusCounts{{ forloop.counter }},
+                            backgroundColor: deptStatusColors{{ forloop.counter }},
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            {% endfor %}
+        {% endif %}
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if department %}Edit{% else %}Create{% endif %} Department - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas {% if department %}fa-edit{% else %}fa-plus{% endif %} me-2"></i> 
+                    {% if department %}Edit{% else %}Create{% endif %} Department
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.admin|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    {{ form.description|as_crispy_field }}
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Save Department
+                        </button>
+                        <a href="{% url 'departments:department_list' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Department Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>About Departments</h6>
+                        <p>
+                            Departments are the organizational units that receive and manage feedback.
+                            Each department should have an administrator who will be responsible for
+                            reviewing and responding to feedback submitted to that department.
+                        </p>
+                        <p>
+                            Users can select a department when submitting feedback, and 
+                            can also associate themselves with a department in their profile.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Best Practices</h6>
+                        <ul>
+                            <li>
+                                <strong>Descriptive Names</strong> - Use clear, recognizable names for departments
+                                that match your institution's structure.
+                            </li>
+                            <li>
+                                <strong>Detailed Descriptions</strong> - Provide helpful descriptions to assist
+                                users in selecting the correct department for their feedback.
+                            </li>
+                            <li>
+                                <strong>Assign Administrators</strong> - Each department should have at least
+                                one administrator who will receive notifications and respond to feedback.
+                            </li>
+                            <li>
+                                <strong>Create Department Tags</strong> - After creating a department, add
+                                relevant tags to help categorize feedback within the department.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Whisper - Anonymous Academic Feedback Platform{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 text-center">
+        <div class="mb-5 stagger-fade-in">
+            <h1 class="display-4 mb-3">Welcome to Class Whisper</h1>
+            <p class="lead">
+                An anonymous feedback platform for academic communities to share
+                constructive criticism, suggestions, and praise.
+            </p>
+            
+            <!-- 3D Logo Container -->
+            <div id="logo-3d-container" class="my-5" style="height: 300px;"></div>
+        </div>
+        
+        <div class="row g-4 py-4 stagger-fade-in">
+            <div class="col-md-4">
+                <div class="card h-100 card-3d">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-secret fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Anonymous Feedback</h3>
+                        <p class="card-text">
+                            Share your thoughts without revealing your identity,
+                            ensuring honest and open communication.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 card-3d">
+                    <div class="card-body text-center">
+                        <i class="fas fa-university fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Department Channels</h3>
+                        <p class="card-text">
+                            Direct your feedback to specific departments
+                            for more targeted and effective responses.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 card-3d">
+                    <div class="card-body text-center">
+                        <i class="fas fa-comments fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Admin Responses</h3>
+                        <p class="card-text">
+                            Receive responses from department administrators
+                            while maintaining your anonymity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-5 fade-in">
+            {% if user.is_authenticated %}
+                {% if user.is_student %}
+                    <a href="{% url 'feedback:feedback_create' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-edit me-2"></i> Submit Feedback
+                    </a>
+                    <a href="{% url 'feedback:student_dashboard' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-history me-2"></i> View Your Feedback
+                    </a>
+                {% elif user.is_faculty or user.is_admin %}
+                    <a href="{% url 'feedback:faculty_dashboard' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                    </a>
+                    <a href="{% url 'moderation:queue' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-tasks me-2"></i> Moderation Queue
+                    </a>
+                {% endif %}
+            {% else %}
+                <div class="p-5 bg-light rounded shadow-sm card-3d">
+                    <h4>Get Started</h4>
+                    <p>Log in or create an account to start using Class Whisper.</p>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-2"></i> Register
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 stagger-fade-in">
+    <div class="col-12">
+        <div class="card bg-light shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="card-title">How It Works</h3>
+                <div class="row g-4 mt-2">
+                    <div class="col-md-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <span>1</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>Register</h5>
+                                <p>Create an account with your academic email address.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <span>2</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>Submit</h5>
+                                <p>Share your feedback, choosing to remain anonymous if you wish.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <span>3</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>Track</h5>
+                                <p>Follow the status of your feedback through your dashboard.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <span>4</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>Respond</h5>
+                                <p>Receive and review responses from department administrators.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add specific animations for homepage
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add floating animation to feature cards
+        const cards = document.querySelectorAll('.card-3d');
+        cards.forEach((card, index) => {
+            // Add a slight delay to each card for staggered animation
+            setTimeout(() => {
+                card.classList.add('floating');
+            }, index * 200);
+        });
+        
+        // Add pulse animation to CTA buttons
+        const ctaButtons = document.querySelectorAll('.btn-primary');
+        ctaButtons.forEach(button => {
+            button.classList.add('pulse');
+        });
+    });
+</script>
+{% endblock %}

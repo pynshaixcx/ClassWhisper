@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm card-3d fade-in">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i> Create an Account
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.username|as_crispy_field }}
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.password1|as_crispy_field }}
+                            {{ form.password2|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label class="form-label">Account Type</label>
+                        <div class="border rounded p-3">
+                            {{ form.role|as_crispy_field }}
+                        </div>
+                        <div class="form-text text-muted">
+                            Choose your role in the academic community.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Register
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                Already have an account? <a href="{% url 'accounts:login' %}">Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add subtle animation to form fields when focused
+        $('.form-control').on('focus', function() {
+            $(this).addClass('focused');
+        }).on('blur', function() {
+            $(this).removeClass('focused');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control.focused {
+        transform: translateY(-2px);
+        transition: transform 0.3s ease;
+    }
+</style>
+{% endblock %}

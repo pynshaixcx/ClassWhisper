@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Departments - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-building me-2"></i> Departments</h2>
+        <p class="lead">Manage academic departments in the system</p>
+    </div>
+    <div class="col-md-4 text-end">
+        {% if user.is_admin or user.is_superuser %}
+            <a href="{% url 'departments:department_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Add Department
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Department List</h5>
+            <span class="badge bg-primary">{{ departments|length }} departments</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if departments %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Administrator</th>
+                            <th>Members</th>
+                            <th>Feedback</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for department in departments %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'departments:department_detail' pk=department.id %}">
+                                        {{ department.name }}
+                                    </a>
+                                </td>
+                                <td>{{ department.get_admin_display }}</td>
+                                <td>{{ department.member_count }}</td>
+                                <td>{{ department.get_feedback_count }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'departments:department_detail' pk=department.id %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if user.is_admin or user.is_superuser %}
+                                            <a href="{% url 'departments:department_update' pk=department.id %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'departments:department_delete' pk=department.id %}" 
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center p-5">
+                <i class="fas fa-building text-muted" style="font-size: 4rem;"></i>
+                <h3 class="mt-4">No departments yet</h3>
+                <p class="lead">Departments help organize feedback by academic units</p>
+                {% if user.is_admin or user.is_superuser %}
+                    <a href="{% url 'departments:department_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i> Add Your First Department
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if user.is_admin or user.is_superuser %}
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Department Management Guide</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Creating Departments</h6>
+                    <p>
+                        Create departments to organize feedback by academic units.
+                        Each department should have a designated administrator who
+                        will be responsible for managing feedback submitted to that department.
+                    </p>
+                    <ul>
+                        <li>Assign an administrator to each department</li>
+                        <li>Create clear, descriptive names for departments</li>
+                        <li>Add detailed descriptions to help users</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>Best Practices</h6>
+                    <p>
+                        Effective department organization helps ensure that feedback
+                        reaches the appropriate people and receives timely responses.
+                    </p>
+                    <ul>
+                        <li>Create department-specific tags for better categorization</li>
+                        <li>Regularly review department configurations</li>
+                        <li>Monitor feedback trends by department</li>
+                        <li>Ensure each department has an active administrator</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

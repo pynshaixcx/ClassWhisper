@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if widget %}Edit{% else %}Create{% endif %} Dashboard Widget - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas {% if widget %}fa-edit{% else %}fa-plus{% endif %} me-2"></i> 
+                    {% if widget %}Edit{% else %}Create{% endif %} Dashboard Widget
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.title|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.widget_type|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div id="configOptions">
+                        <!-- Dynamic configuration options based on widget type -->
+                        <div id="timeOptions" style="display: none;">
+                            <div class="mb-3">
+                                <label for="id_grouping" class="form-label">Time Grouping</label>
+                                {{ form.grouping }}
+                                <div class="form-text">
+                                    How to group data points on the time axis.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Save Widget
+                        </button>
+                        <a href="{% url 'analytics:dashboard' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Widget Type Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Feedback Count</h6>
+                        <p>
+                            Displays the total count of feedback submissions,
+                            including a breakdown of anonymous vs. identified feedback.
+                        </p>
+                        
+                        <h6>Feedback by Department</h6>
+                        <p>
+                            Shows a bar chart of feedback distribution across departments,
+                            helping identify which departments receive the most feedback.
+                        </p>
+                        
+                        <h6>Feedback by Status</h6>
+                        <p>
+                            Displays a pie chart showing the distribution of feedback
+                            by status (pending, approved, rejected, addressed).
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Feedback by Tag</h6>
+                        <p>
+                            Shows a bar chart of the most frequently used tags,
+                            helping identify common topics in feedback.
+                        </p>
+                        
+                        <h6>Feedback Over Time</h6>
+                        <p>
+                            Displays a line chart tracking feedback volume over time,
+                            with options to group by day, week, or month.
+                        </p>
+                        
+                        <h6>Response Time Analysis</h6>
+                        <p>
+                            Shows the average time between feedback submission and
+                            first response, with a distribution of response times.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Tip:</strong> You can add multiple widgets to your dashboard and rearrange them
+                    by dragging and dropping to create a customized analytics view.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Show/hide configuration options based on widget type
+        function toggleConfigOptions() {
+            var widgetType = $('#id_widget_type').val();
+            
+            // Hide all config options first
+            $('#timeOptions').hide();
+            
+            // Show relevant options based on widget type
+            if (widgetType === 'feedback_over_time') {
+                $('#timeOptions').show();
+            }
+        }
+        
+        // Initial setup
+        toggleConfigOptions();
+        
+        // On change
+        $('#id_widget_type').change(toggleConfigOptions);
+    });
+</script>
+{% endblock %}

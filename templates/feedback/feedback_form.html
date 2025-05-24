@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Submit Feedback - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm card-3d fade-in">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit me-2"></i> Submit Feedback
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                {% if not departments_exist %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>No departments available!</strong> Please contact an administrator to create departments before submitting feedback.
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i> Return to Home
+                        </a>
+                    </div>
+                {% else %}
+                    <form method="post" id="feedbackForm" novalidate>
+                        {% csrf_token %}
+                        
+                        {{ form.title|as_crispy_field }}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
+                            <div class="card card-body bg-light">
+                                {{ form.content }}
+                            </div>
+                            {% if form.content.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.content.errors }}
+                                </div>
+                            {% endif %}
+                            {% if form.content.help_text %}
+                                <div class="form-text text-muted">
+                                    {{ form.content.help_text }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.department|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.tags|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-check form-switch mt-4 mb-4">
+                            {{ form.is_anonymous }}
+                            <label class="form-check-label" for="{{ form.is_anonymous.id_for_label }}">
+                                Submit Anonymously
+                            </label>
+                            <div class="form-text text-muted">
+                                If checked, your identity will not be visible to anyone, including administrators.
+                                You will still be able to track this feedback in your dashboard.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary pulse">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Feedback
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Handle department change to load related tags
+        $('#id_department').change(function() {
+            var departmentId = $(this).val();
+            if (departmentId) {
+                // Clear current options
+                $('#id_tags').empty();
+                
+                // Show loading indicator
+                $('#id_tags').append(
+                    $('<option></option>').text('Loading tags...')
+                );
+                
+                // Get tags for the selected department
+                $.ajax({
+                    url: '{% url "feedback:get_department_tags" %}',
+                    data: {
+                        'department_id': departmentId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Clear loading indicator
+                        $('#id_tags').empty();
+                        
+                        // Add new options
+                        if (data.length > 0) {
+                            $.each(data, function(index, tag) {
+                                $('#id_tags').append(
+                                    $('<option></option>').val(tag.id).text(tag.name)
+                                );
+                            });
+                        } else {
+                            $('#id_tags').append(
+                                $('<option></option>').text('No tags available for this department')
+                            );
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Trigger change event if department is pre-selected
+        if ($('#id_department').val()) {
+            $('#id_department').trigger('change');
+        }
+        
+        // Add focus animations to form fields
+        $('.form-control, .form-select').focus(function() {
+            $(this).parent().addClass('focused');
+        }).blur(function() {
+            $(this).parent().removeClass('focused');
+        });
+        
+        // Add submission animation
+        $('#feedbackForm').submit(function() {
+            const submitBtn = $(this).find('button[type="submit"]');
+            submitBtn.removeClass('pulse');
+            submitBtn.html('<i class="fas fa-circle-notch fa-spin me-2"></i> Submitting...');
+            submitBtn.prop('disabled', true);
+        });
+        
+        // Special styling for anonymous checkbox
+        $('#id_is_anonymous').change(function() {
+            if(this.checked) {
+                $(this).closest('.form-switch').addClass('anonymous-active');
+            } else {
+                $(this).closest('.form-switch').removeClass('anonymous-active');
+            }
+        });
+        
+        // Trigger change event if anonymous is pre-checked
+        if ($('#id_is_anonymous').is(':checked')) {
+            $('#id_is_anonymous').trigger('change');
+        }
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .focused {
+        transform: translateY(-2px);
+    }
+    
+    #id_content {
+        border: none;
+        background-color: transparent;
+        min-height: 150px;
+    }
+    
+    .form-switch.anonymous-active {
+        background-color: rgba(0, 0, 0, 0.03);
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        border-left: 3px solid var(--accent);
+    }
+    
+    .form-control, .form-select, .card-body {
+        transition: all var(--transition-medium);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Feedback Submitted - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm card-3d fade-in">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-check-circle me-2"></i> Feedback Submitted Successfully
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-5">
+                    <div class="success-icon-container mb-4 floating">
+                        <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    <h3>Thank you for your feedback!</h3>
+                    <p class="lead">
+                        Your feedback has been submitted and will be reviewed by the appropriate department.
+                    </p>
+                </div>
+                
+                {% if feedback.is_anonymous %}
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-user-secret me-2"></i> Your feedback was submitted anonymously
+                            </h5>
+                            <p>
+                                Your feedback will appear in your dashboard with an anonymous indicator, but only you will know 
+                                that you submitted it. No one else will be able to see that you're the author.
+                            </p>
+                            <p>
+                                You can also use this unique reference code to track your feedback:
+                            </p>
+                            <div class="text-center my-4">
+                                <div class="bg-white p-3 rounded shadow-sm d-inline-block">
+                                    <h5 class="mb-0 font-monospace">{{ feedback.hash_id }}</h5>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            id="copyButton"
+                                            data-clipboard-text="{{ feedback.hash_id }}">
+                                        <i class="fas fa-copy me-1"></i> Copy to clipboard
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-info-circle me-2"></i> What's Next?</h5>
+                            <p>
+                                Your feedback will be reviewed and you will be notified of any updates.
+                                You can track the status of your feedback from your dashboard.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Feedback Details</h5>
+                            <div class="card shadow-sm">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Title</strong>
+                                            <span>{{ feedback.title }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Department</strong>
+                                            <span>{{ feedback.department.name }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Status</strong>
+                                            <span class="badge bg-warning">Pending</span>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Submitted</strong>
+                                            <span>{{ feedback.submission_date|date:"F j, Y, g:i a" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Need Help?</h5>
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <p>
+                                        If you need to follow up on your feedback or have questions about the process, 
+                                        please contact the department administrator.
+                                    </p>
+                                    <p class="mb-0">
+                                        Department: <strong>{{ feedback.department.name }}</strong>
+                                        {% if feedback.department.admin %}
+                                            <br>Administrator: <strong>{{ feedback.department.get_admin_display }}</strong>
+                                        {% else %}
+                                            <br><em>No administrator assigned</em>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{% url 'feedback:student_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Copy to clipboard functionality
+        $('#copyButton').click(function() {
+            const text = $(this).data('clipboard-text');
+            if (text) {
+                navigator.clipboard.writeText(text).then(function() {
+                    // Change button text temporarily
+                    const originalText = $('#copyButton').html();
+                    $('#copyButton').html('<i class="fas fa-check me-1"></i> Copied!');
+                    setTimeout(function() {
+                        $('#copyButton').html(originalText);
+                    }, 2000);
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-icon-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .success-icon-container::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 20px;
+        bottom: -10px;
+        left: 0;
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 70%);
+        opacity: 0.3;
+        border-radius: 50%;
+        animation: shadowPulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes shadowPulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.3; }
+        50% { transform: scale(1.1); opacity: 0.4; }
+    }
+    
+    .floating {
+        animation: floating 6s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+</style>
+{% endblock %}

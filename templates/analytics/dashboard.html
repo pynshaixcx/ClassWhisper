@@ -1,0 +1,627 @@
+{% extends 'base.html' %}
+{% load feedback_extras %}
+
+{% block title %}Analytics Dashboard - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row mb-4 stagger-fade-in">
+    <div class="col-md-6">
+        <h2><i class="fas fa-chart-line me-2"></i> Analytics Dashboard</h2>
+        <p class="lead">Track feedback metrics and trends</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <div class="btn-group">
+            <a href="{% url 'analytics:create_widget' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Add Widget
+            </a>
+            <a href="{% url 'analytics:report_list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-file-alt me-2"></i> Reports
+            </a>
+            <a href="{% url 'analytics:create_report' %}" class="btn btn-outline-primary">
+                <i class="fas fa-plus me-2"></i> Create Report
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm card-3d">
+            <div class="card-body py-3">
+                <form method="get" id="filterForm" class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <label for="department" class="form-label mb-1">Department</label>
+                        <select name="department" id="department" class="form-select form-select-sm">
+                            <option value="">All Departments</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if selected_department.id == dept.id %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="days" class="form-label mb-1">Time Period</label>
+                        <select name="days" id="days" class="form-select form-select-sm">
+                            <option value="7" {% if days == 7 %}selected{% endif %}>Last 7 days</option>
+                            <option value="30" {% if days == 30 %}selected{% endif %}>Last 30 days</option>
+                            <option value="90" {% if days == 90 %}selected{% endif %}>Last 90 days</option>
+                            <option value="180" {% if days == 180 %}selected{% endif %}>Last 6 months</option>
+                            <option value="365" {% if days == 365 %}selected{% endif %}>Last year</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label mb-1 d-block">&nbsp;</label>
+                        <div class="btn-group btn-group-sm w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-1"></i> Apply
+                            </button>
+                            <button type="button" id="resetButton" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-1"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box h-100">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="stat-label">Total Feedback</div>
+                    <div class="stat-value">{{ total_feedback }}</div>
+                </div>
+                <div class="text-end">
+                    <div class="small text-muted mb-1">Status Breakdown</div>
+                    <div class="badge bg-warning text-dark me-1">{{ pending_feedback }} Pending</div>
+                    <div class="badge bg-success me-1">{{ addressed_feedback }} Addressed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="widget-container" class="row widget-container stagger-fade-in">
+    {% for widget in widgets %}
+        <div id="widget-{{ widget.id }}" class="col-lg-{% if widget.widget_type == 'feedback_over_time' %}12{% else %}6{% endif %} mb-4" data-widget-id="{{ widget.id }}" data-position="{{ widget.position }}">
+            <div class="card shadow-sm h-100 card-3d">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ widget.title }}</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'analytics:update_widget' pk=widget.id %}">
+                                    <i class="fas fa-edit me-2"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'analytics:delete_widget' pk=widget.id %}">
+                                    <i class="fas fa-trash-alt me-2"></i> Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    {% if widget.widget_type == 'feedback_count' %}
+                        <div class="text-center py-4">
+                            <div class="display-4 mb-2 counter-value">{{ widget_data|get_item:widget.id|get_item:'count' }}</div>
+                            <div class="text-muted">Total Feedback</div>
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-center gap-3">
+                                    <div>
+                                        <span class="h4 counter-value">{{ widget_data|get_item:widget.id|get_item:'anonymous_count' }}</span>
+                                        <div class="small text-muted">Anonymous</div>
+                                    </div>
+                                    <div>
+                                        {% with total_count=widget_data|get_item:widget.id|get_item:'count' anon_count=widget_data|get_item:widget.id|get_item:'anonymous_count' %}
+                                            <span class="h4 counter-value">{{ total_count|subtract:anon_count }}</span>
+                                        {% endwith %}
+                                        <div class="small text-muted">Identified</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {% elif widget.widget_type == 'feedback_by_department' %}
+                        <div class="chart-container">
+                            <canvas id="deptChart{{ widget.id }}"></canvas>
+                        </div>
+                    
+                    {% elif widget.widget_type == 'feedback_by_status' %}
+                        <div class="chart-container">
+                            <canvas id="statusChart{{ widget.id }}"></canvas>
+                        </div>
+                    
+                    {% elif widget.widget_type == 'feedback_by_tag' %}
+                        <div class="chart-container">
+                            <canvas id="tagChart{{ widget.id }}"></canvas>
+                        </div>
+                    
+                    {% elif widget.widget_type == 'feedback_over_time' %}
+                        <div class="chart-container">
+                            <canvas id="timeChart{{ widget.id }}"></canvas>
+                        </div>
+                    
+                    {% elif widget.widget_type == 'response_time' %}
+                        <div class="text-center py-4">
+                            <div class="display-4 mb-2 counter-value">
+                                {{ widget_data|get_item:widget.id|get_item:'avg_response_time'|floatformat:1 }}
+                                <span class="h6">hours</span>
+                            </div>
+                            <div class="text-muted">Average Response Time</div>
+                            <div class="mt-4">
+                                <div class="chart-container" style="height: 150px;">
+                                    <canvas id="responseTimeChart{{ widget.id }}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="card shadow-sm fade-in">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-chart-bar" style="font-size: 5rem; opacity: 0.2;"></i>
+                    <h3 class="mt-4">No widgets yet</h3>
+                    <p class="lead">Add widgets to customize your analytics dashboard</p>
+                    <a href="{% url 'analytics:create_widget' %}" class="btn btn-primary mt-2">
+                        <i class="fas fa-plus me-2"></i> Add Your First Widget
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Debug Section - Remove this in production -->
+<div class="mt-4 text-muted small">
+    Debug Info: {{ widgets|length }} widgets loaded | Widget data keys: {{ widget_data.keys|join:", " }}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .widget-placeholder {
+        border: 2px dashed var(--border-light);
+        background-color: var(--bg-secondary);
+        border-radius: var(--border-radius-md);
+        min-height: 200px;
+    }
+    
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+    
+    @media (max-width: 768px) {
+        .chart-container {
+            height: 250px;
+        }
+    }
+    
+    .counter-value {
+        font-family: 'Clash Display', sans-serif;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    
+    .counter-value.animated {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+
+<script>
+// Global widget data
+const widgetData = {{ widget_data|safe|default:"{}" }};
+console.log('Widget data:', widgetData);
+
+// Wait for DOM to be ready
+window.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+    animateCounterValues();
+    initializeSortable();
+    setupFilterHandlers();
+});
+
+function initializeCharts() {
+    // Set Chart.js defaults for minimalist design
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#555555';
+    
+    {% for widget in widgets %}
+        {% if widget.widget_type == 'feedback_by_department' %}
+            createDepartmentChart({{ widget.id }});
+        {% elif widget.widget_type == 'feedback_by_status' %}
+            createStatusChart({{ widget.id }});
+        {% elif widget.widget_type == 'feedback_by_tag' %}
+            createTagChart({{ widget.id }});
+        {% elif widget.widget_type == 'feedback_over_time' %}
+            createTimeChart({{ widget.id }});
+        {% elif widget.widget_type == 'response_time' %}
+            createResponseTimeChart({{ widget.id }});
+        {% endif %}
+    {% endfor %}
+}
+
+function createDepartmentChart(widgetId) {
+    const canvas = document.getElementById('deptChart' + widgetId);
+    if (!canvas) return;
+    
+    const data = widgetData[widgetId] || [];
+    console.log('Department chart data:', data);
+    
+    if (!Array.isArray(data) || data.length === 0) {
+        displayNoDataMessage(canvas);
+        return;
+    }
+    
+    const labels = data.map(item => item.department__name || 'Unknown');
+    const counts = data.map(item => item.count || 0);
+    const colors = data.map((_, index) => {
+        const shade = 0.3 + (0.6 * (index / data.length));
+        return `rgba(0, 0, 0, ${shade})`;
+    });
+    
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Feedback Count',
+                data: counts,
+                backgroundColor: colors,
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createStatusChart(widgetId) {
+    const canvas = document.getElementById('statusChart' + widgetId);
+    if (!canvas) return;
+    
+    const data = widgetData[widgetId] || [];
+    console.log('Status chart data:', data);
+    
+    if (!Array.isArray(data) || data.length === 0) {
+        displayNoDataMessage(canvas);
+        return;
+    }
+    
+    const labels = data.map(item => {
+        const status = item.status || 'Unknown';
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    });
+    const counts = data.map(item => item.count || 0);
+    const colors = [
+        'rgba(0, 0, 0, 0.8)',
+        'rgba(0, 0, 0, 0.6)',
+        'rgba(0, 0, 0, 0.4)',
+        'rgba(0, 0, 0, 0.2)'
+    ];
+    
+    new Chart(canvas, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: colors.slice(0, data.length),
+                borderWidth: 1,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+}
+
+function createTagChart(widgetId) {
+    const canvas = document.getElementById('tagChart' + widgetId);
+    if (!canvas) return;
+    
+    const data = widgetData[widgetId] || [];
+    console.log('Tag chart data:', data);
+    
+    if (!Array.isArray(data) || data.length === 0) {
+        displayNoDataMessage(canvas);
+        return;
+    }
+    
+    const labels = data.map(item => item.tags__name || 'No Tag');
+    const counts = data.map(item => item.count || 0);
+    const colors = data.map((_, index) => {
+        const shade = 0.3 + (0.6 * (index / data.length));
+        return `rgba(0, 0, 0, ${shade})`;
+    });
+    
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Feedback Count',
+                data: counts,
+                backgroundColor: colors,
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createTimeChart(widgetId) {
+    const canvas = document.getElementById('timeChart' + widgetId);
+    if (!canvas) return;
+    
+    const data = widgetData[widgetId] || [];
+    console.log('Time chart data:', data);
+    
+    if (!Array.isArray(data) || data.length === 0) {
+        displayNoDataMessage(canvas);
+        return;
+    }
+    
+    const labels = data.map(item => {
+        if (item.date) {
+            const date = new Date(item.date);
+            return date.toLocaleDateString();
+        }
+        return 'Invalid Date';
+    });
+    const counts = data.map(item => item.count || 0);
+    
+    new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Feedback Count',
+                data: counts,
+                fill: {
+                    target: 'origin',
+                    above: 'rgba(0, 0, 0, 0.05)'
+                },
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: 'rgba(0, 0, 0, 0.8)',
+                tension: 0.3,
+                pointBackgroundColor: 'rgba(0, 0, 0, 0.8)',
+                pointBorderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createResponseTimeChart(widgetId) {
+    const canvas = document.getElementById('responseTimeChart' + widgetId);
+    if (!canvas) return;
+    
+    const data = widgetData[widgetId] || {};
+    console.log('Response time chart data:', data);
+    
+    if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
+        displayNoDataMessage(canvas);
+        return;
+    }
+    
+    const responseTimes = data.data.map(item => item.response_time_hours || 0);
+    
+    // Create histogram
+    const buckets = [0, 12, 24, 48, 72, 96, 120];
+    const bucketCounts = Array(buckets.length).fill(0);
+    
+    responseTimes.forEach(time => {
+        for (let i = 0; i < buckets.length; i++) {
+            if (time <= buckets[i] || i === buckets.length - 1) {
+                bucketCounts[i]++;
+                break;
+            }
+        }
+    });
+    
+    const bucketLabels = buckets.map((val, idx) => {
+        if (idx === 0) return '<= ' + val + 'h';
+        if (idx === buckets.length - 1) return '> ' + buckets[idx-1] + 'h';
+        return buckets[idx-1] + 'h - ' + val + 'h';
+    });
+    
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: bucketLabels,
+            datasets: [{
+                label: 'Count',
+                data: bucketCounts,
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                borderColor: 'rgba(0, 0, 0, 0.8)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+function displayNoDataMessage(canvas) {
+    const ctx = canvas.getContext('2d');
+    const parent = canvas.parentElement;
+    
+    // Set canvas dimensions to match parent
+    canvas.width = parent.clientWidth;
+    canvas.height = parent.clientHeight;
+    
+    ctx.font = '16px Inter';
+    ctx.fillStyle = '#999';
+    ctx.textAlign = 'center';
+    ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
+}
+
+function animateCounterValues() {
+    const counterValues = document.querySelectorAll('.counter-value');
+    
+    counterValues.forEach(value => {
+        const originalText = value.textContent;
+        const targetValue = parseFloat(originalText);
+        
+        if (isNaN(targetValue)) {
+            value.classList.add('animated');
+            return;
+        }
+        
+        value.textContent = '0';
+        
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    value.classList.add('animated');
+                    
+                    let startValue = 0;
+                    const duration = 1500;
+                    const increment = targetValue / (duration / 16);
+                    
+                    const timer = setInterval(() => {
+                        startValue += increment;
+                        
+                        if (originalText.includes('.')) {
+                            value.textContent = startValue.toFixed(1);
+                        } else {
+                            value.textContent = Math.floor(startValue);
+                        }
+                        
+                        if (startValue >= targetValue) {
+                            value.textContent = originalText;
+                            clearInterval(timer);
+                        }
+                    }, 16);
+                    
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(value);
+    });
+}
+
+function initializeSortable() {
+    const widgetContainer = document.getElementById('widget-container');
+    if (widgetContainer) {
+        new Sortable(widgetContainer, {
+            animation: 150,
+            handle: '.card-header',
+            ghostClass: 'widget-placeholder',
+            onEnd: function(evt) {
+                const positions = {};
+                document.querySelectorAll('.widget-container > div').forEach((div, index) => {
+                    const widgetId = div.dataset.widgetId;
+                    if (widgetId) {
+                        positions[widgetId] = index;
+                    }
+                });
+                
+                // Save positions
+                fetch('{% url "analytics:reorder_widgets" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(positions)
+                }).then(response => {
+                    console.log('Widget positions updated');
+                }).catch(error => {
+                    console.error('Error updating positions:', error);
+                });
+            }
+        });
+    }
+}
+
+function setupFilterHandlers() {
+    document.getElementById('resetButton')?.addEventListener('click', function() {
+        document.getElementById('department').value = '';
+        document.getElementById('days').value = '30';
+        document.getElementById('filterForm').submit();
+    });
+    
+    document.getElementById('department')?.addEventListener('change', function() {
+        document.getElementById('filterForm').submit();
+    });
+    
+    document.getElementById('days')?.addEventListener('change', function() {
+        document.getElementById('filterForm').submit();
+    });
+}
+</script>
+{% endblock %}

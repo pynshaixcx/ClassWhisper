@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if tag %}Edit{% else %}Create{% endif %} Tag - Class Whisper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas {% if tag %}fa-edit{% else %}fa-plus{% endif %} me-2"></i> 
+                    {% if tag %}Edit{% else %}Create{% endif %} Tag
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.department|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    {{ form.description|as_crispy_field }}
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Save Tag
+                        </button>
+                        <a href="{% url 'feedback:tag_list' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Tag Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>About Tags</h6>
+                        <p>
+                            Tags help categorize and organize feedback within departments.
+                            They allow students to label their feedback with specific topics
+                            and make it easier to identify trends and common issues.
+                        </p>
+                        <p>
+                            Each tag is associated with a specific department and can only
+                            be used for feedback submitted to that department.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Best Practices</h6>
+                        <ul>
+                            <li>
+                                <strong>Clear Names</strong> - Use descriptive, concise names
+                                that clearly indicate what the tag represents.
+                            </li>
+                            <li>
+                                <strong>Helpful Descriptions</strong> - Provide descriptions that
+                                explain when and how to use the tag.
+                            </li>
+                            <li>
+                                <strong>Consistent Patterns</strong> - Use consistent naming patterns
+                                for related tags (e.g., "Course Content", "Course Delivery", etc.).
+                            </li>
+                            <li>
+                                <strong>Balanced Coverage</strong> - Create enough tags to cover common
+                                feedback topics, but not so many that it becomes overwhelming.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Tip:</strong> Consider creating tags for common feedback categories such as
+                    "Facilities", "Course Content", "Teaching Style", "Technology Issues", "Scheduling",
+                    and "Academic Support".
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+# Django and related packages
+Django==4.2.7
+django-crispy-forms==2.0
+crispy-bootstrap5==0.7
+django-filter==23.2
+django-bootstrap5==23.1
+pillow==10.0.0
+
+# Production packages (uncomment for production)
+psycopg2-binary==2.9.6  # PostgreSQL adapter
+gunicorn==21.2.0  # WSGI HTTP server
+whitenoise==6.5.0  # Static file serving
+
+# Development and testing
+faker==18.10.1
